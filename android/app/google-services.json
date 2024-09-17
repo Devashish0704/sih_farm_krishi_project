@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "16376572103",
+    "project_id": "farmer-89418",
+    "storage_bucket": "farmer-89418.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16376572103:android:0ef31d6f2c172c4b7cf6e2",
+        "android_client_info": {
+          "package_name": "com.example.e_commerce_app_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdLPr1td75bSy4XYzf8Obk5aC3mP3GVjQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
