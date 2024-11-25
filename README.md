@@ -13,8 +13,9 @@
 * [ ] 11. Crop Residues Section (S)
 * [ ] 12. Contract Farming Section (S)
 * [ ] 13. Automatating product Upload whith voice data.
-* [ ] 14.  
-* [ ] 13. 
+* [ ] 14.  Farmer Recomendations(B)
+* [ ] 15.  App Notf. (B)
+* [ ] 15.  
 
 
 # Search functionlity
