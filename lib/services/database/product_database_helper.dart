@@ -156,13 +156,11 @@ class ProductDatabaseHelper {
       throw Exception("User is not logged in");
     }
     product.owner = uid;
-   // final productMap = product.toMap();
+    // final productMap = product.toMap();
     final productsCollectionReference =
         firestore.collection(PRODUCTS_COLLECTION_NAME);
     final docRef = await productsCollectionReference.add(product.toMap());
-    await docRef.update({
-     
-    });
+    await docRef.update({});
     return docRef.id;
   }
 
