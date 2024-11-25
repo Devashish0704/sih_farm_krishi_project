@@ -1,6 +1,6 @@
 # todo
 
-- [ ] 1.  Search functionality.(B)
+* [ ] 1.  Search functionality.(B)
 * [ ] 2.  Single Product Screen and product cards.(B)
 * [ ] 3.  Home Screen layout and cards (B).
 * [ ] 4.  Toggle to search best or nearest (B).
