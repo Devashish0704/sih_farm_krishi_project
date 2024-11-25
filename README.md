@@ -1,4 +1,9 @@
 # todo
 
-- [ ] 1. hello
-* [ ] 2.
+- [x] 1. Search functionality
+* [x] 2. 
+* [ ] 2. 
+* [ ] 2. 
+* [ ] 2. 
+* [ ] 2. 
+* [ ] 2. 
