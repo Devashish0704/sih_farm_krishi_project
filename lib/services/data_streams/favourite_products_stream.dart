@@ -5,9 +5,17 @@ class FavouriteProductsStream extends DataStream<List<String>> {
   @override
   void reload() {
     final favProductsFuture = UserDatabaseHelper().usersFavouriteProductsList;
+
     favProductsFuture.then((favProducts) {
-      addData(favProducts.cast<String>());
+      if (favProducts.isNotEmpty) {
+        //  print("favProducts: $favProducts");
+        addData(favProducts.cast<String>());
+      } else {
+        print("No favourite products found");
+        addData([]); // Add an empty list if no favorite products are found
+      }
     }).catchError((e) {
+      print("Error loading favourite products: $e");
       addError(e);
     });
   }

@@ -1,6 +1,6 @@
 # todo
 
-* [ ] 1.  Search functionality.(B)
+* [x] 1.  Search functionality.(B) --imran
 * [ ] 2.  Single Product Screen and product cards.(B) --Imran
 * [ ] 3.  Home Screen layout and cards (B).
 * [ ] 4.  Toggle to search best or nearest (B).
@@ -16,5 +16,8 @@
 * [ ] 14.  
 * [ ] 13. 
 
+
+# Search functionlity
+- integrated with product database helper calss and in home screen
 
 

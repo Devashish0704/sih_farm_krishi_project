@@ -11,7 +11,6 @@ import 'package:e_commerce_app_flutter/services/data_streams/favourite_products_
 import 'package:e_commerce_app_flutter/services/database/product_database_helper.dart';
 import 'package:e_commerce_app_flutter/size_config.dart';
 import 'package:flutter/material.dart';
-import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:logger/logger.dart';
 import '../../../utils.dart';
 import '../components/home_header.dart';
@@ -68,6 +67,7 @@ class _BodyState extends State<Body> {
   @override
   void initState() {
     super.initState();
+    print("initState");
     favouriteProductsStream.init();
     allProductsStream.init();
   }

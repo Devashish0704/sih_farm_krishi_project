@@ -68,11 +68,19 @@ class UserDatabaseHelper {
 
   Future<List<String>> get usersFavouriteProductsList async {
     final uid = AuthentificationService().currentUser!.uid;
+    // print(uid);
     final userDocSnapshot =
         await firestore.collection(USERS_COLLECTION_NAME).doc(uid).get();
+    // print(userDocSnapshot);
     final userDocData = userDocSnapshot.data();
-    final favList =
-        userDocData?[FAV_PRODUCTS_KEY] as List<String>? ?? <String>[];
+    // print(userDocData);
+    final favList = (userDocData?[FAV_PRODUCTS_KEY] as List<dynamic>?)
+            ?.map((item) => item as String)
+            .toList() ??
+        <String>[];
+    // final favList =
+    //     userDocData?[FAV_PRODUCTS_KEY] as List<String>? ?? <String>[];
+    //print("favv list $favList");
     return favList;
   }
 

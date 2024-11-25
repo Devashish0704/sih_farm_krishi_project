@@ -2,7 +2,7 @@ import 'package:e_commerce_app_flutter/screens/home/home_screen.dart';
 import 'package:e_commerce_app_flutter/screens/sign_in/sign_in_screen.dart';
 import 'package:e_commerce_app_flutter/services/authentification/authentification_service.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:geolocator/geolocator.dart';
 
 class AuthentificationWrapper extends StatefulWidget {
   static const String routeName = "/authentification_wrapper";
@@ -23,23 +23,92 @@ class _AuthentificationWrapperState extends State<AuthentificationWrapper> {
   }
 
   Future<void> _checkLocationPermission() async {
-    var status = await Permission.location.status;
-    if (status.isGranted) {
-      setState(() {
-        _locationPermissionGranted = true;
-        _locationPermissionChecked = true;
-      });
-    } else {
-      var result = await Permission.location.request();
-      if (result.isGranted) {
-        setState(() {
-          _locationPermissionGranted = true;
-        });
-      }
-      setState(() {
-        _locationPermissionChecked = true;
-      });
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled
+      await _showLocationServiceDialog();
+      return;
     }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        setState(() {
+          _locationPermissionChecked = true;
+          _locationPermissionGranted = false;
+        });
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Show dialog to open settings
+      await _showPermissionDeniedDialog();
+      setState(() {
+        _locationPermissionChecked = true;
+        _locationPermissionGranted = false;
+      });
+      return;
+    }
+
+    // Permission granted
+    setState(() {
+      _locationPermissionChecked = true;
+      _locationPermissionGranted = true;
+    });
+
+    // Optionally get current position
+    try {
+      Position position = await Geolocator.getCurrentPosition();
+      print('Current location: ${position.latitude}, ${position.longitude}');
+    } catch (e) {
+      print('Error getting location: $e');
+    }
+  }
+
+  Future<void> _showLocationServiceDialog() {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Location Services Disabled'),
+          content: Text('Please enable location services to use this app.'),
+          actions: [
+            TextButton(
+              child: Text('Open Settings'),
+              onPressed: () {
+                Geolocator.openLocationSettings();
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showPermissionDeniedDialog() {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Permission Denied'),
+          content: Text(
+              'Location permission is permanently denied. Please go to settings to enable it.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

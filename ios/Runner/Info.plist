@@ -51,15 +51,12 @@
     <string>We need access to your camera to allow you to take photos.</string>
     <key>NSDocumentPickerUsageDescription</key>
 <string>We need access to your files to allow you to select documents.</string>
-
-    	<key>NSLocationWhenInUseUsageDescription</key>
-		<string>Your location is required to provide personalized content.</string>
-
-	<key>NSLocationAlwaysUsageDescription</key>
-		<string>Your location is required for background updates.</string>
-
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>Your location is required to provide personalized content even in the background.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+<string>We need your location to provide better services.</string>
+<key>NSLocationAlwaysUsageDescription</key>
+<string>We need your location for enhanced functionality.</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>We need your location for improved accuracy.</string>
 
 
 </dict>

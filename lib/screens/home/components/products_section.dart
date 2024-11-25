@@ -21,6 +21,7 @@ class ProductsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //  print(productsStreamController);
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: 14,
@@ -50,6 +51,7 @@ class ProductsSection extends StatelessWidget {
       stream: productsStreamController.stream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          // print("data is ${snapshot.data}");
           if (snapshot.data == 0) {
             return Center(
               child: NothingToShowContainer(
@@ -57,13 +59,14 @@ class ProductsSection extends StatelessWidget {
               ),
             );
           }
-          return buildProductGrid(snapshot.data as List<String>);
+          return buildProductGrid(snapshot.data! as List<String>);
         } else if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasError) {
           final error = snapshot.error;
+          //   print(error);
           Logger().w(error.toString());
         }
         return Center(
@@ -78,6 +81,7 @@ class ProductsSection extends StatelessWidget {
   }
 
   Widget buildProductGrid(List<String> productsId) {
+    // print(productsId);
     return GridView.builder(
       shrinkWrap: true,
       physics: BouncingScrollPhysics(),
