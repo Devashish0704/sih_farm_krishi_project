@@ -1,5 +1,6 @@
 # todo
 
+
 * [x] 1.    Search functionality.(B) --imran
 * [x] 2.    Single Product Screen and product cards.(B) --Imran
 * [ ] 3.    Home Screen layout and cards (B) 
@@ -19,6 +20,7 @@
 * [ ] 17.   orders showing to farmerz also
 * [ ] 18.   Bidding screen
 * [ ] 
+
 
 
 # Search functionlity
