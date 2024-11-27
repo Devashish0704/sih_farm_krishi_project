@@ -11,6 +11,7 @@ class ProductDetailsScreen extends StatelessWidget {
   const ProductDetailsScreen({
     required this.productId,
   });
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(

@@ -59,6 +59,9 @@ dependencies:
   line_icons: ^2.0.3
   flutter_tts: ^4.2.0
   speech_to_text: ^7.0.0
+  cached_network_image: ^3.4.1
+  smooth_page_indicator: ^1.2.0+3
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
