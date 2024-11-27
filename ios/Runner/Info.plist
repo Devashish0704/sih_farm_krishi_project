@@ -57,6 +57,11 @@
 <string>We need your location for enhanced functionality.</string>
 <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 <string>We need your location for improved accuracy.</string>
+<key>NSSpeechRecognitionUsageDescription</key>
+<string>We need access to your speech recognition for transcribing speech to text.</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>We need access to your microphone for speech input.</string>
+
 
 
 </dict>

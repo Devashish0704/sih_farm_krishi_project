@@ -15,8 +15,10 @@
 * [ ] 13. Automatating product Upload whith voice data.
 * [ ] 14.  Farmer Recomendations(B)
 * [ ] 15.  App Notf. (B)
-* [ ] 15.  
-
+* [ ] 16. transactions and payment gateway(B&S)
+* [ ] 17. orders showing to farmerz also
+* [ ] 18.
+* [ ] 
 
 # Search functionlity
 - integrated with product database helper calss and in home screen

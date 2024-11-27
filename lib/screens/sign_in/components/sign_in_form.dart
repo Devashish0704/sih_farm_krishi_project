@@ -105,12 +105,14 @@ class _SignInFormState extends State<SignInForm> {
   void signInButtonCallback() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
       try {
         // Perform sign-in with email and password
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
+        print("s1");
         // Navigate to the next screen if sign-in is successful
         Navigator.pushReplacementNamed(context, '/home');
       } on FirebaseAuthException catch (e) {

@@ -95,7 +95,7 @@ class ProductReviewsSection extends StatelessWidget {
           ),
           Align(
             alignment: Alignment.topCenter,
-            child: buildProductRatingWidget(product.rating),
+            child: buildProductRatingWidget(product.rating!),
           ),
         ],
       ),
