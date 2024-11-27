@@ -42,7 +42,7 @@ class ProductDatabaseHelper {
     final queryRefDocs = await queryRef.get();
     for (final doc in queryRefDocs.docs) {
       final product = Product.fromMap(doc.data(), id: doc.id);
-      if (product.title!.toLowerCase().contains(query) ||
+      if (product.name!.toLowerCase().contains(query) ||
           product.description!.toLowerCase().contains(query) ||
           product.highlights.toString().toLowerCase().contains(query) ||
           product.variant.toString().toLowerCase().contains(query) ||

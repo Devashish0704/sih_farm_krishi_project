@@ -23,7 +23,7 @@ class ProductDescription extends StatelessWidget {
           children: [
             Text.rich(
               TextSpan(
-                text: product.title,
+                text: product.name,
                 style: TextStyle(
                   fontSize: 21,
                   color: Colors.black,

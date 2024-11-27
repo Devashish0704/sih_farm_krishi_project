@@ -42,7 +42,7 @@ class CartItemCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    snapshot.data!.title!,
+                    snapshot.data!.name!,
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black,
