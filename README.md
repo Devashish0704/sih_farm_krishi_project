@@ -17,7 +17,7 @@
 * [ ] 15.   App Notf. (B)
 * [ ] 16.   transactions and payment gateway(B&S)
 * [ ] 17.   orders showing to farmerz also
-* [ ] 18.
+* [ ] 18.   Bidding screen
 * [ ] 
 
 
