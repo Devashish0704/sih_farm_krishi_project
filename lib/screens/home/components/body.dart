@@ -31,32 +31,32 @@ class _BodyState extends State<Body> {
     <String, dynamic>{
       ICON_KEY: "assets/icons/Others.svg",
       TITLE_KEY: "Cereals",
-      PRODUCT_TYPE_KEY: ProductType.Cereals,
+      PRODUCT_TYPE_KEY: ProductType.animalFeed,
     },
     <String, dynamic>{
       ICON_KEY: "assets/icons/Others.svg",
       TITLE_KEY: "Fruits",
-      PRODUCT_TYPE_KEY: ProductType.Fruits,
+      PRODUCT_TYPE_KEY: ProductType.animalFeed,
     },
     <String, dynamic>{
       ICON_KEY: "assets/icons/Others.svg",
       TITLE_KEY: "Pulses",
-      PRODUCT_TYPE_KEY: ProductType.Pulses,
+      PRODUCT_TYPE_KEY: ProductType.animalFeed,
     },
     <String, dynamic>{
       ICON_KEY: "assets/icons/Others.svg",
       TITLE_KEY: "Vegetables",
-      PRODUCT_TYPE_KEY: ProductType.Vegetables,
+      PRODUCT_TYPE_KEY: ProductType.animalFeed,
     },
     <String, dynamic>{
       ICON_KEY: "assets/icons/Others.svg",
       TITLE_KEY: "waste",
-      PRODUCT_TYPE_KEY: ProductType.Wastes,
+      PRODUCT_TYPE_KEY: ProductType.animalFeed,
     },
     <String, dynamic>{
       ICON_KEY: "assets/icons/Others.svg",
       TITLE_KEY: "Others",
-      PRODUCT_TYPE_KEY: ProductType.Others,
+      PRODUCT_TYPE_KEY: ProductType.animalFeed,
     },
   ];
 

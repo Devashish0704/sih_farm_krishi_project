@@ -104,7 +104,7 @@ class ProductCard extends StatelessWidget {
               Flexible(
                 flex: 1,
                 child: Text(
-                  "${product.title}\n",
+                  "${product.name}\n",
                   style: TextStyle(
                     color: kTextColor,
                     fontSize: 13,
@@ -173,8 +173,8 @@ class ProductCard extends StatelessWidget {
               SizedBox(height: 10),
               TextButton(
                   onPressed: () => Helpers.mapForDestination(
-                        product.position.latitude,
-                        product.position.longitude,
+                        product.position!.latitude,
+                        product.position!.longitude,
                       ),
                   child: Text("Go to Location")),
               userOnly
@@ -203,8 +203,8 @@ class ProductCard extends StatelessWidget {
             text: isEnglish ? 'Location' : 'स्थान',
             icon: Icons.my_location,
             onPress: () => Helpers.mapForDestination(
-              product.position.latitude,
-              product.position.longitude,
+              product.position!.latitude,
+              product.position!.longitude,
             ),
           ),
         ],

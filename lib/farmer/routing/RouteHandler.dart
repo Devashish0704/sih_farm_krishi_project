@@ -73,7 +73,7 @@ var addProductHandler = Handler(
     return Provider<ProductsBloc>(
       create: (context) => ProductsBloc(fetchProducts: false),
       dispose: (context, bloc) => bloc.dispose(),
-      child: MyProductsScreen(),
+      child: EditProductScreen(),
     );
   },
 );
