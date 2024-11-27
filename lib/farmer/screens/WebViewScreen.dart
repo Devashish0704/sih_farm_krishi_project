@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+// import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
 import './VideoScreen.dart';
 
@@ -45,9 +45,9 @@ class WebViewScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Container(
         margin: const EdgeInsets.only(bottom: 10),
-        child: WebviewScaffold(
-          url: url,
-        ),
+        // child: WebviewScaffold(
+        //   url: url,
+        // ),
       ),
     );
   }

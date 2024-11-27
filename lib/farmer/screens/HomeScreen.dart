@@ -18,23 +18,32 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final PageController _pageController = PageController(initialPage: 0);
   int _selectedIndex = 0;
-  final _pageController = PageController(initialPage: 0);
 
-  Map<String, Widget> _pages = {
-    "Video": Playlist(),
-    // "Market": Provider<ProductsBloc>(
+  final List<Widget> _pages = [
+    // Uncomment and add your ProductsScreen if needed
+    // Provider<ProductsBloc>(
     //   create: (context) => ProductsBloc(),
     //   dispose: (context, blog) => blog.dispose(),
     //   child: ProductsScreen(),
     // ),
-    "Menu": MenuScreen(),
-    "Mandi": Provider<MandiBloc>(
+    MenuScreen(),
+    Playlist(),
+    Provider<MandiBloc>(
       create: (context) => MandiBloc(),
       dispose: (context, bloc) => bloc.dispose(),
       child: MandiScreen(),
     ),
-  };
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    _pageController.jumpToPage(index);
+  }
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -43,76 +52,44 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool isEnglish = Provider.of<LocalizationProvider>(context).isEnglish;
-
     return Scaffold(
       body: PageView(
-        onPageChanged: (index) => setState(() => _selectedIndex = index),
         controller: _pageController,
-        children: _pages.values.toList(),
+        children: _pages,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
       ),
-      bottomNavigationBar: navBar(context, isEnglish),
-    );
-  }
-
-  Widget navBar(BuildContext context, bool isEnglish) {
-    return Container(
-      decoration: BoxDecoration(color: Colors.white, boxShadow: [
-        BoxShadow(blurRadius: 20, color: Colors.black.withOpacity(.1))
-      ]),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
-          child: GNav(
-            gap: 5,
-            activeColor: Colors.white,
-            iconSize: 24,
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-            duration: Duration(milliseconds: 800),
-            tabBackgroundColor: Theme.of(context).primaryColor,
-            tabs: [
-              GButton(
-                icon: LineIcons.bars,
-                text: isEnglish ? 'Menu' : 'मेन्यू',
-                iconColor: Theme.of(context).primaryColor,
-                onPressed: (index) {
-                  setState(() => _selectedIndex = index);
-                },
-              ),
-              GButton(
-                icon: Icons.balance,
-                text: isEnglish ? 'video' : 'वीडियो',
-                iconColor: Theme.of(context).primaryColor,
-                onPressed: (index) {
-                  print("pressed");
-                  setState(() => _selectedIndex = index);
-                },
-              ),
-              GButton(
-                icon: LineIcons.map,
-                text: isEnglish ? 'Mandi' : 'मंडी',
-                iconColor: Theme.of(context).primaryColor,
-                onPressed: (index) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                },
-              ),
-            ],
-            selectedIndex: _selectedIndex,
-            onTabChange: (index) {
-              _pageController.animateToPage(
-                index,
-                duration: Duration(milliseconds: 400),
-                curve: Curves.ease,
-              );
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          // Uncomment and add your ProductsScreen if needed
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.shopping_cart),
+          //   label: 'Market',
+          // ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu),
+            label: 'Menu',
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.video_library),
+            label: 'Video',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_grocery_store),
+            label: 'Mandi',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
       ),
     );
   }
+}
+
+class MandiBloc {
+  void dispose() {}
 }

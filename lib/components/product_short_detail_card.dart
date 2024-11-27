@@ -48,7 +48,7 @@ class ProductShortDetailCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        product.title!,
+                        product.name!,
                         softWrap: true,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(

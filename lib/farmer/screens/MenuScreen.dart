@@ -21,7 +21,7 @@ class MenuScreen extends StatelessWidget {
         child: UserInfo.UserInfo(),
       );
     }
-    return Container();  
+    return Container();
   }
 
   @override
@@ -44,6 +44,15 @@ class MenuScreen extends StatelessWidget {
                 : () => Application.router
                     .navigateTo(context, '/my-products/${user.uid}'),
             title: isEnglish ? 'My Products' : 'मेरे उत्पाद',
+            icon: Icons.storage,
+          ),
+          menuItem(
+            onPress: user == null
+                ? () {
+                    print("user is null");
+                  }
+                : () => Application.router.navigateTo(context, '/add-product'),
+            title: isEnglish ? 'Add Products' : 'मेरे उत्पाद',
             icon: Icons.storage,
           ),
           menuItem(

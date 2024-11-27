@@ -13,6 +13,7 @@ class EditProductScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => ProductDetails(),
+      // child: ProductUploadSelectionScreen(),
       child: ProductUploadForm(
         product: productToEdit,
       ),

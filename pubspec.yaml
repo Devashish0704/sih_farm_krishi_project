@@ -47,7 +47,7 @@ dependencies:
   expandable: ^5.0.1
   fluro: ^2.0.5
   fluttertoast: ^8.2.8
-  flutter_webview_plugin: ^0.4.0
+  # flutter_webview_plugin: ^0.4.0
   font_awesome_flutter: ^10.7.0
   geolocator: ^13.0.1
   google_maps_flutter: ^2.9.0
@@ -57,6 +57,8 @@ dependencies:
   url_launcher: ^6.3.0
   weather: ^3.1.1
   line_icons: ^2.0.3
+  flutter_tts: ^4.2.0
+  speech_to_text: ^7.0.0
 
 dev_dependencies:
   flutter_test:
