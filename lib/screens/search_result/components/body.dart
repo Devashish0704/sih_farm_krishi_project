@@ -107,7 +107,9 @@ class Body extends StatelessWidget {
                         ),
                       ),
                     );
-                  }, userOnly: false, isEnglish: true,
+                  },
+                  userOnly: false,
+                  isEnglish: true,
                 );
               },
             );

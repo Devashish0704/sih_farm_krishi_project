@@ -21,15 +21,16 @@ class ProductImages extends StatelessWidget {
       create: (context) => ProductImageSwiper(),
       child: Consumer<ProductImageSwiper>(
         builder: (context, productImagesSwiper, child) {
-          return Column(
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               SwipeDetector(
-                onSwipeLeft: (offset) {
+                onSwipeUp: (offset) {
                   productImagesSwiper.currentImageIndex++;
                   productImagesSwiper.currentImageIndex %=
                       product.images!.length;
                 },
-                onSwipeRight: (offset) {
+                onSwipeDown: (offset) {
                   productImagesSwiper.currentImageIndex--;
                   productImagesSwiper.currentImageIndex +=
                       product.images!.length;
@@ -45,8 +46,8 @@ class ProductImages extends StatelessWidget {
                     ),
                   ),
                   child: SizedBox(
-                    height: SizeConfig.screenHeight * 0.35,
-                    width: SizeConfig.screenWidth * 0.75,
+                    height: SizeConfig.screenHeight * 0.25,
+                    width: SizeConfig.screenWidth * 0.60,
                     child: Image.network(
                       product.images![productImagesSwiper.currentImageIndex],
                       fit: BoxFit.contain,
@@ -55,7 +56,7 @@ class ProductImages extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 16),
-              Row(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ...List.generate(
