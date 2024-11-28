@@ -1,4 +1,5 @@
 import 'package:e_commerce_app_flutter/farmer/screens/UserInfoScreen.dart';
+import 'package:e_commerce_app_flutter/farmer/screens/orderScreen.dart';
 import 'package:e_commerce_app_flutter/screens/edit_product/components/edit_product_form.dart';
 import 'package:e_commerce_app_flutter/screens/edit_product/edit_product_screen.dart';
 import 'package:fluro/fluro.dart';
@@ -23,6 +24,9 @@ import '../screens/CalenderScreen/screens/AddCropFieldScreen.dart';
 
 var initHandler = Handler(handlerFunc: (context, params) {
   return InitScreen();
+});
+var orderScreenHandler = Handler(handlerFunc: (context, params) {
+  return OrderScreen();
 });
 
 var loginHandler = Handler(
@@ -59,6 +63,15 @@ var weatherHandler = Handler(handlerFunc: (context, params) {
 });
 
 var myProductsHandler = Handler(
+  handlerFunc: (context, Map<String, List<String>> params) {
+    return Provider<ProductsBloc>(
+      create: (context) => ProductsBloc(userId: params['userId']!.first),
+      dispose: (context, bloc) => bloc.dispose(),
+      child: MyProductsScreen(),
+    );
+  },
+);
+var ordersScreenHandler = Handler(
   handlerFunc: (context, Map<String, List<String>> params) {
     return Provider<ProductsBloc>(
       create: (context) => ProductsBloc(userId: params['userId']!.first),
