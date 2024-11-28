@@ -42,12 +42,13 @@ class _PlaylistState extends State<Playlist> {
 
   _buildVideo(Video video) {
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => VideoScreen(id: video.id),
-        ),
-      ),
+      onTap: () {},
+      // => Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (_) => VideoScreen(id: video.id),
+      //   ),
+      // ),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
         padding: const EdgeInsets.all(10.0),

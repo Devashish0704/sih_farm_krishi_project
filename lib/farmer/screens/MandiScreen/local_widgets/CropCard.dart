@@ -10,11 +10,6 @@ class CropCard extends StatelessWidget {
 
   CropCard(this.crop, this.isEnglish);
 
-  // String _getFormattedDate(String date) {
-  //   var parts = date.split(' ');
-  //   return "${parts[1]} ${parts[2]} ${parts[3]}";
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -35,7 +30,7 @@ class CropCard extends StatelessWidget {
             padding: const EdgeInsets.only(left: 8),
             alignment: Alignment.centerLeft,
             child: Text(
-              crop.name,
+              crop.commodity,
               style: TextStyle(
                 color: Colors.black,
                 fontFamily: 'Lato',
@@ -49,11 +44,12 @@ class CropCard extends StatelessWidget {
             children: <Widget>[
               pocketContainer(
                 isEnglish ? 'District' : 'जिला',
-                crop.location,
+                crop.apmc,
               ),
-              pocketContainer(isEnglish ? 'Arrival' : 'पहुचना', crop.updatedOn
-                  // _getFormattedDate(crop.updatedOn),
-                  ),
+              pocketContainer(
+                isEnglish ? 'Arrival' : 'पहुचना',
+                crop.commodityArrivals,
+              ),
             ],
           ),
           Row(
