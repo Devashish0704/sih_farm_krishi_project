@@ -263,13 +263,25 @@ class UserDatabaseHelper {
 
   Future<List<String>> get orderedProductsList async {
     final uid = AuthentificationService().currentUser!.uid;
+    print(uid);
     final orderedProductsSnapshot = await firestore
-        .collection(USERS_COLLECTION_NAME)
-        .doc(uid)
         .collection(ORDERED_PRODUCTS_COLLECTION_NAME)
+        .where('buyer_id', isEqualTo: uid)
         .get();
+
+    print(
+        "ordered products ${orderedProductsSnapshot.docs.map((doc) => doc.id).toList()}");
     return orderedProductsSnapshot.docs.map((doc) => doc.id).toList();
   }
+  // Future<List<String>> get orderedProductsList async {
+  //   final uid = AuthentificationService().currentUser!.uid;
+  //   final orderedProductsSnapshot = await firestore
+  //       .collection(USERS_COLLECTION_NAME)
+  //       .doc(uid)
+  //       .collection(ORDERED_PRODUCTS_COLLECTION_NAME)
+  //       .get();
+  //   return orderedProductsSnapshot.docs.map((doc) => doc.id).toList();
+  // }
 
   Future<void> updatePaymentStatusToDone(String orderedProductId) async {
     final uid = AuthentificationService().currentUser!.uid;
@@ -289,21 +301,56 @@ class UserDatabaseHelper {
 
   Future<bool> addToMyOrders(List<OrderedProduct> orders) async {
     final uid = AuthentificationService().currentUser!.uid;
-    final orderedProductsCollectionRef = firestore
-        .collection(USERS_COLLECTION_NAME)
-        .doc(uid)
-        .collection(ORDERED_PRODUCTS_COLLECTION_NAME);
+    print(uid);
+    final orderedProductsCollectionRef =
+        firestore.collection(ORDERED_PRODUCTS_COLLECTION_NAME);
+
     for (final order in orders) {
+      order.buyerId = uid;
+      final product =
+          await ProductDatabaseHelper().getProductWithID(order.productUid);
+      String? sellerId;
+      if (product != null) {
+        sellerId = product.owner;
+      }
+
+      order.sellerId = sellerId;
+      print(order.buyerId);
+      print(order.sellerId);
+      // final orderData1 = order.toMap()..['buyerId'] = uid;
+      // final orderData = orderData1..['sellerId'] = sellerId;
+      print("odereing product $order");
       await orderedProductsCollectionRef.add(order.toMap());
     }
     return true;
   }
+  // Future<bool> addToMyOrders(List<OrderedProduct> orders) async {
+  //   final uid = AuthentificationService().currentUser!.uid;
+  //   final orderedProductsCollectionRef = firestore
+  //       .collection(USERS_COLLECTION_NAME)
+  //       .doc(uid)
+  //       .collection(ORDERED_PRODUCTS_COLLECTION_NAME);
+  //   for (final order in orders) {
+  //     await orderedProductsCollectionRef.add(order.toMap());
+  //   }
+  //   return true;
+  // }
+
+  // Future<bool> addToOrderedProducts(List<OrderedProduct> orders) async {
+  //   final uid = AuthentificationService().currentUser!.uid;
+  //   final orderedProductsCollectionRef = firestore
+  //       .collection(ORDERED_PRODUCTS_COLLECTION_NAME)
+  //       .doc(uid)
+  //       .collection(ORDERED_PRODUCTS_COLLECTION_NAME);
+  //   for (final order in orders) {
+  //     await orderedProductsCollectionRef.add(order.toMap());
+  //   }
+  //   return true;
+  // }
 
   Future<OrderedProduct> getOrderedProductFromId(String id) async {
     final uid = AuthentificationService().currentUser!.uid;
     final doc = await firestore
-        .collection(USERS_COLLECTION_NAME)
-        .doc(uid)
         .collection(ORDERED_PRODUCTS_COLLECTION_NAME)
         .doc(id)
         .get();

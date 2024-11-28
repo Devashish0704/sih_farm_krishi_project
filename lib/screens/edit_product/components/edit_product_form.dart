@@ -8,7 +8,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:e_commerce_app_flutter/services/firestore_files_access/firestore_files_access_service.dart';
-import 'package:e_commerce_app_flutter/screens/edit_product/provider_models/ProductDetails.dart';
 
 class ProductUploadForm extends StatefulWidget {
   final Product? product;
@@ -169,7 +168,7 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
 
       final product = Product(
         widget.product?.id ?? '',
-        name: "${_selectedVariety}  ${_selectedProduct}",
+        name: "${_selectedVariety}",
         category: _selectedCategory,
         variant: _selectedVariety,
         price: double.parse(_price.toString()),
@@ -194,6 +193,7 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
         isPriceNegotiable: _isPriceNegotaible,
         isDeliveryAvailable: _isDeliveryAvailable,
       );
+      print(product.productType);
       print(product);
 
       if (widget.product == null) {
@@ -235,6 +235,7 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
                   .toList(),
               onChanged: (value) => setState(() {
                 _selectedProductType = value;
+                print(value);
                 _selectedCategory = null;
                 _selectedProduct = null;
                 _selectedVariety = null;

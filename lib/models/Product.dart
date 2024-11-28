@@ -56,7 +56,7 @@ class Product extends Model {
   String? owner;
   ProductType? productType;
   DateTime? harvestDate;
-  bool? isOrganic;
+  bool? isOrganic = false;
   List<String>? certificationImages;
   List<String>? images;
   String? storageMethod;

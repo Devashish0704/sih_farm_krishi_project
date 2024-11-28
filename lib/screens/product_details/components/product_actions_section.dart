@@ -1,5 +1,6 @@
 import 'package:e_commerce_app_flutter/components/async_progress_dialog.dart';
 import 'package:e_commerce_app_flutter/components/top_rounded_container.dart';
+import 'package:e_commerce_app_flutter/constants.dart';
 import 'package:e_commerce_app_flutter/models/Product.dart';
 import 'package:e_commerce_app_flutter/screens/product_details/components/product_description.dart';
 import 'package:e_commerce_app_flutter/screens/product_details/provider_models/ProductActions.dart';
@@ -26,9 +27,10 @@ class ProductActionsSection extends StatelessWidget {
       children: [
         Stack(
           children: [
-            TopRoundedContainer(
-              child: ProductDescription(product: product),
-            ),
+            ProductDetailCard(product: product),
+            // TopRoundedContainer(
+            //   child: ProductDescription(product: product),
+            // ),
             Align(
               alignment: Alignment.topCenter,
               child: buildFavouriteButton(),
@@ -129,6 +131,116 @@ class ProductActionsSection extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class ProductDetailCard extends StatelessWidget {
+  final Product product;
+
+  const ProductDetailCard({Key? key, required this.product}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Container(
+        margin: EdgeInsets.only(top: 20),
+        decoration: BoxDecoration(
+          //   color: color,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(64),
+            topRight: Radius.circular(64),
+            bottomRight: Radius.circular(24),
+            bottomLeft: Radius.circular(24),
+          ),
+        ),
+        child: Padding(
+          padding:
+              const EdgeInsets.only(top: 50, left: 25, right: 25, bottom: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      product.name ?? 'Unnamed Product',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Text(
+                    '₹${product.price?.toStringAsFixed(2) ?? '0.00'}',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: kPrimaryColor,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 12),
+              Text(
+                'Product Details',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+              SizedBox(height: 8),
+              _buildDetailRow('Category', product.category ?? 'Not specified'),
+              _buildDetailRow(
+                  'Type',
+                  product.productType?.toString().split('.').last ??
+                      'Not specified'),
+              _buildDetailRow('Grade', product.grade ?? 'Not specified'),
+              _buildDetailRow(
+                  'Harvest Date',
+                  product.harvestDate != null
+                      ? product.harvestDate!.toLocal().toString().split(' ')[0]
+                      : 'Not specified'),
+              _buildDetailRow(
+                  'Organic', product.isOrganic == true ? 'Yes' : 'No'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              color: Colors.black87,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
