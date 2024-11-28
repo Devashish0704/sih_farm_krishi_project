@@ -19,7 +19,7 @@
 * [ ] 16.   transactions and payment gateway(B&S)
 * [ ] 17.   orders showing to farmerz also
 * [ ] 18.   Bidding screen
-* [ ] 
+* [x] 19.   orders to sellers(S) --imran
 
 
 

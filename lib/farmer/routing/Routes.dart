@@ -18,6 +18,7 @@ class Routes {
   static const myFields = '/my-fields';
   static const addCropField = '/add-crop-field';
   static const myCropField = '/my-fields/:id';
+  static const orders = '/orders';
 
   static void configureRouter(FluroRouter router) {
     router.define(
@@ -63,6 +64,11 @@ class Routes {
     router.define(
       addProduct,
       handler: addProductHandler,
+      transitionType: TransitionType.native,
+    );
+    router.define(
+      orders,
+      handler: orderScreenHandler,
       transitionType: TransitionType.native,
     );
     router.define(

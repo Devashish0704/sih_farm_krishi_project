@@ -1,3 +1,4 @@
+import 'package:e_commerce_app_flutter/services/authentification/authentification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -32,7 +33,8 @@ class _InitScreenState extends State<InitScreen> {
       await Provider.of<LocalizationProvider>(context, listen: false)
           .switchLanguage(isEnglish);
 
-      final currentUser = await FirebaseAuth.instance.currentUser;
+      // final currentUser = await FirebaseAuth.instance.currentUser;
+      final currentUser = AuthentificationService().currentUser!.uid;
 
       if (currentUser == null) {
         print("1");
@@ -43,7 +45,7 @@ class _InitScreenState extends State<InitScreen> {
       print(currentUser);
 
       final databaseService = UserDatabaseService();
-      Ujer.User? user = await databaseService.getUser(currentUser.uid);
+      Ujer.User? user = await databaseService.getUser(currentUser);
 
       // // // final user = await databaseService.getUser(currentUser.uid);
       print(user);

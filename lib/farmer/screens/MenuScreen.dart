@@ -2,7 +2,6 @@ import 'package:e_commerce_app_flutter/farmer/routing/Application.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import '../widgets/UserInfo.dart' as UserInfo;
 import '../widgets/MenuItem.dart';
 import '../services/UserInfoProvider.dart';
@@ -54,6 +53,15 @@ class MenuScreen extends StatelessWidget {
                 : () => Application.router.navigateTo(context, '/add-product'),
             title: isEnglish ? 'Add Products' : 'मेरे उत्पाद',
             icon: Icons.storage,
+          ),
+          menuItem(
+            onPress: user == null
+                ? () {
+                    print("user is null");
+                  }
+                : () => Application.router.navigateTo(context, '/orders'),
+            title: isEnglish ? 'orders' : 'मेरे उत्पाद',
+            icon: Icons.add_box,
           ),
           menuItem(
             onPress: () => Application.router.navigateTo(context, '/my-fields'),
