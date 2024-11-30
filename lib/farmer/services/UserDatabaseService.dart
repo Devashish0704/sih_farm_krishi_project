@@ -63,8 +63,13 @@ class UserDatabaseService {
   Stream<Calender> streamCalender(String id) {
     return _db
         .collection('cropData')
-        .doc(id)
+        .doc("wheet")
         .snapshots()
         .map((snapshot) => Calender.fromFirestore(snapshot));
+    // return _db
+    //     .collection('cropData')
+    //     .doc(id)
+    //     .snapshots()
+    //     .map((snapshot) => Calender.fromFirestore(snapshot));
   }
 }
