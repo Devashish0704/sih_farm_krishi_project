@@ -30,13 +30,17 @@ class MyCropFieldScreen extends StatelessWidget {
         child: StreamBuilder<CropField>(
           stream: userDatabaseService.streamCropField(fieldId),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                !snapshot.hasData) {
               return loadingSpinner();
             }
 
             final cropField = snapshot.data;
             if (cropField == null) {
-              return Center(child: Text(isEnglish ? 'No Crop Field Data' : 'कोई फसल खेत डेटा नहीं'));
+              return Center(
+                  child: Text(isEnglish
+                      ? 'No Crop Field Data'
+                      : 'कोई फसल खेत डेटा नहीं'));
             }
 
             return SingleChildScrollView(
@@ -44,20 +48,19 @@ class MyCropFieldScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   fieldDetails(
-                    
                     imageUrl: cropField.imageUrl,
                     cropName: cropField.crop,
                     startDate: cropField.startTime,
                     isEnglish: isEnglish,
                     endDate: CropFieldProvider.getFormattedDatePlusDays(
                         cropField.startDate, cropField.harvestTime),
-            ),
+                  ),
                   PrimaryButton(
                     text: isEnglish ? 'VIEW CALENDAR' : 'कैलेंडर देखें',
                     press: () => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (ctx) => CalenderScreen(
-                            cropField.crop, cropField.startDate),
+                        builder: (ctx) =>
+                            CalenderScreen(cropField.crop, cropField.startDate),
                       ),
                     ),
                     color: Colors.green[800]!,

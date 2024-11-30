@@ -1,5 +1,6 @@
 import 'package:e_commerce_app_flutter/farmer/routing/Application.dart';
 import 'package:e_commerce_app_flutter/farmer/routing/Routes.dart';
+import 'package:e_commerce_app_flutter/farmer/screens/WeatherScreen/state/WeatherBloc.dart';
 import 'package:e_commerce_app_flutter/farmer/services/LocalizationProvider.dart';
 import 'package:e_commerce_app_flutter/wrappers/authentification_wrapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';

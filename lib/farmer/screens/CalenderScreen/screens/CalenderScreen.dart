@@ -34,18 +34,24 @@ class CalenderScreen extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data == null) {
-            return Center(child: Text(isEnglish ? 'No Data Available' : 'कोई डेटा उपलब्ध नहीं'));
+            return Center(
+                child: Text(
+                    isEnglish ? 'No Data Available' : 'कोई डेटा उपलब्ध नहीं'));
           }
 
           final calender = snapshot.data!;
-          
+
           if (calender.titles.isEmpty) {
-            return Center(child: Text(isEnglish ? 'No Entries Found' : 'कोई प्रविष्टियाँ नहीं मिलीं'));
+            return Center(
+                child: Text(isEnglish
+                    ? 'No Entries Found'
+                    : 'कोई प्रविष्टियाँ नहीं मिलीं'));
           }
 
           return ListView.builder(
             padding: const EdgeInsets.symmetric(vertical: 10),
             itemBuilder: (ctx, index) {
+              print(calender.links);
               final title = calender.titles[index];
               final subtitle = calender.subtitles[index];
               final date = CropFieldProvider.getFormattedDatePlusDays(
