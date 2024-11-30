@@ -39,6 +39,7 @@ class User {
 
     // GeoPoint loc = data["location"];
     GeoPoint loc = data["location"] != null ? data["location"] : GeoPoint(0, 0);
+    print("loc lat yo ${loc.latitude}");
 
     return User(
       userId: snapshot.id, // Use snapshot.id for document ID

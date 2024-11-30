@@ -1,10 +1,145 @@
+// // // import 'package:e_commerce_app_flutter/farmer/screens/MandiScreen/local_widgets/CropCard.dart';
+// // // import 'package:e_commerce_app_flutter/farmer/services/LocalizationProvider.dart';
+// // // import 'package:e_commerce_app_flutter/farmer/services/Mandi/mandiService.dart';
+// // // import 'package:flutter/material.dart';
+
+// // // import 'package:e_commerce_app_flutter/farmer/models/Crop.dart';
+// // // import 'package:provider/provider.dart';
+
+// // // class MandiScreen extends StatefulWidget {
+// // //   @override
+// // //   _MandiScreenState createState() => _MandiScreenState();
+// // // }
+
+// // // class _MandiScreenState extends State<MandiScreen> {
+// // //   final MandiService _mandiService = MandiService();
+// // //   List<Crop> crops = [];
+// // //   bool isLoading = true;
+// // //   String? error;
+
+// // //   @override
+// // //   void initState() {
+// // //     super.initState();
+// // //     _loadCrops();
+// // //   }
+
+// // //   Future<void> _loadCrops() async {
+// // //     try {
+// // //       setState(() {
+// // //         isLoading = true;
+// // //         error = null;
+// // //       });
+
+// // //       // You can change this to your desired state
+// // //       final fetchedCrops = await _mandiService.fetchCropsByState(
+// // //         'Rajasthan',
+// // //         language:
+// // //             Provider.of<LocalizationProvider>(context, listen: false).isEnglish
+// // //                 ? 'en'
+// // //                 : 'hi',
+// // //       );
+
+// // //       print("fetchedCropsYo $fetchedCrops");
+
+// // //       setState(() {
+// // //         crops = fetchedCrops;
+// // //         isLoading = false;
+// // //       });
+// // //     } catch (e) {
+// // //       setState(() {
+// // //         error = e.toString();
+// // //         isLoading = false;
+// // //       });
+// // //     }
+// // //   }
+
+// // //   @override
+// // //   Widget build(BuildContext context) {
+// // //     bool isEnglish = Provider.of<LocalizationProvider>(context).isEnglish;
+
+// // //     return Container(
+// // //       height: MediaQuery.of(context).size.height,
+// // //       width: MediaQuery.of(context).size.width,
+// // //       decoration: BoxDecoration(
+// // //         gradient: LinearGradient(
+// // //           colors: [
+// // //             Theme.of(context).primaryColor,
+// // //             Theme.of(context).colorScheme.secondary,
+// // //           ],
+// // //         ),
+// // //       ),
+// // //       child: Column(
+// // //         children: <Widget>[
+// // //           SizedBox(height: MediaQuery.of(context).size.height * 0.06),
+// // //           Container(
+// // //             width: MediaQuery.of(context).size.width,
+// // //             // child: _header(context, isEnglish),
+// // //           ),
+// // //           Expanded(
+// // //             child: Padding(
+// // //               padding: const EdgeInsets.only(top: 10),
+// // //               child: _buildContent(),
+// // //             ),
+// // //           ),
+// // //         ],
+// // //       ),
+// // //     );
+// // //   }
+
+// // //   Widget _buildContent() {
+// // //     if (isLoading) {
+// // //       return Center(child: CircularProgressIndicator());
+// // //     }
+
+// // //     if (error != null) {
+// // //       print(error);
+// // //       return Center(
+// // //         child: Column(
+// // //           mainAxisAlignment: MainAxisAlignment.center,
+// // //           children: [
+// // //             Text(
+// // //               error!,
+// // //               style: TextStyle(color: Colors.white),
+// // //               textAlign: TextAlign.center,
+// // //             ),
+// // //             ElevatedButton(
+// // //               onPressed: _loadCrops,
+// // //               child: Text('Retry'),
+// // //             ),
+// // //           ],
+// // //         ),
+// // //       );
+// // //     }
+
+// // //     if (crops.isEmpty) {
+// // //       return Center(
+// // //         child: Text(
+// // //           'No crops available',
+// // //           style: TextStyle(color: Colors.white),
+// // //         ),
+// // //       );
+// // //     }
+
+// // //     return ListView.builder(
+// // //       padding: const EdgeInsets.all(0),
+// // //       itemCount: crops.length,
+// // //       itemBuilder: (ctx, index) => CropCard(
+// // //         crops[index],
+// // //         Provider.of<LocalizationProvider>(context).isEnglish,
+// // //       ),
+// // //     );
+// // //   }
+
+// // //   // ... rest of your existing code (_header and _goToTutorial methods)
+// // // }
+
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
+import 'package:e_commerce_app_flutter/farmer/models/Crop.dart';
 import 'package:e_commerce_app_flutter/farmer/screens/MandiScreen/local_widgets/CropCard.dart';
 import 'package:e_commerce_app_flutter/farmer/services/LocalizationProvider.dart';
 import 'package:e_commerce_app_flutter/farmer/services/Mandi/mandiService.dart';
-import 'package:flutter/material.dart';
-
-import 'package:e_commerce_app_flutter/farmer/models/Crop.dart';
-import 'package:provider/provider.dart';
 
 class MandiScreen extends StatefulWidget {
   @override
@@ -13,37 +148,114 @@ class MandiScreen extends StatefulWidget {
 
 class _MandiScreenState extends State<MandiScreen> {
   final MandiService _mandiService = MandiService();
+
   List<Crop> crops = [];
+  List<Map<String, dynamic>> states = [];
+  List<Map<String, dynamic>> apmcs = [];
+
+  String? selectedStateId;
+  String? selectedStateName;
+  String? selectedApmcId;
+  String? selectedApmcName;
+
   bool isLoading = true;
   String? error;
 
   @override
   void initState() {
     super.initState();
-    _loadCrops();
+    _initializeScreen();
   }
 
-  Future<void> _loadCrops() async {
+  Future<void> _initializeScreen() async {
     try {
-      setState(() {
-        isLoading = true;
-        error = null;
-      });
+      setState(() => isLoading = true);
 
-      // You can change this to your desired state
+      // Fetch user's location and states
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      String userState = await _mandiService.getStateFromLocation(position);
+
+      final fetchedStates = await _mandiService.fetchStates();
       final fetchedCrops = await _mandiService.fetchCropsByState(
-        'Rajasthan',
+        userState,
         language:
             Provider.of<LocalizationProvider>(context, listen: false).isEnglish
                 ? 'en'
                 : 'hi',
       );
 
-      print("fetchedCropsYo $fetchedCrops");
+      // Remove duplicates from the states list
+      final uniqueStates = fetchedStates.toSet().toList();
+
+      setState(() {
+        states = uniqueStates;
+        selectedStateName =
+            uniqueStates.any((state) => state['state_name'] == userState)
+                ? userState
+                : null;
+        crops = fetchedCrops;
+        isLoading = false;
+        error = null;
+      });
+    } catch (e) {
+      setState(() {
+        error = e.toString();
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _onStateChanged(String? state) async {
+    if (state == null) return;
+
+    try {
+      setState(() {
+        selectedStateId = state;
+        selectedStateName = getStateNameFromId(selectedStateId);
+        apmcs = [];
+        selectedApmcId = null;
+        isLoading = true;
+      });
+
+      print("fetched ampc yoyo stateid $state");
+      final fetchedApmcs = await _mandiService.fetchAPMCs(state);
+      print("fetched ampc yoyo $fetchedApmcs");
+
+      setState(() {
+        apmcs = fetchedApmcs;
+        isLoading = false;
+        error = null;
+      });
+    } catch (e) {
+      setState(() {
+        error = e.toString();
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _onApmcChanged(String? apmc) async {
+    if (apmc == null) return;
+
+    try {
+      setState(() {
+        selectedApmcId = apmc;
+        isLoading = true;
+        selectedApmcId = apmc;
+        selectedApmcName = getApmcNameFromId(selectedApmcId);
+      });
+
+      final fetchedCrops = await _mandiService.fetchCropsByAPMC(
+        selectedStateName!,
+        selectedApmcName!,
+      );
 
       setState(() {
         crops = fetchedCrops;
         isLoading = false;
+        error = null;
       });
     } catch (e) {
       setState(() {
@@ -57,71 +269,82 @@ class _MandiScreenState extends State<MandiScreen> {
   Widget build(BuildContext context) {
     bool isEnglish = Provider.of<LocalizationProvider>(context).isEnglish;
 
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).primaryColor,
-            Theme.of(context).colorScheme.secondary,
-          ],
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(isEnglish ? 'Mandi' : 'मंडी'),
       ),
-      child: Column(
-        children: <Widget>[
-          SizedBox(height: MediaQuery.of(context).size.height * 0.06),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            // child: _header(context, isEnglish),
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).primaryColor,
+              Theme.of(context).colorScheme.secondary,
+            ],
           ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: _buildContent(),
-            ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              DropdownButton<String>(
+                value: selectedStateId,
+                hint: Text(isEnglish ? 'Select State' : 'राज्य चुनें'),
+                onChanged: _onStateChanged,
+                items: states.map((state) {
+                  return DropdownMenuItem<String>(
+                    value: state['state_id'] as String,
+                    child: Text(state['state_name'] as String),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 16),
+              if (apmcs.isNotEmpty)
+                DropdownButton<String>(
+                  value: selectedApmcId,
+                  hint: Text(isEnglish ? 'Select APMC' : 'एपीएमसी चुनें'),
+                  onChanged: _onApmcChanged,
+                  items: apmcs.map((apmc) {
+                    return DropdownMenuItem<String>(
+                      value: apmc['apmc_id'] as String,
+                      child: Text(apmc['apmc_name'] as String),
+                    );
+                  }).toList(),
+                ),
+              const SizedBox(height: 16),
+              Expanded(child: _buildContent()),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
   Widget _buildContent() {
     if (isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (error != null) {
-      print(error);
+      print("error yoyo $error");
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              error!,
-              style: TextStyle(color: Colors.white),
-              textAlign: TextAlign.center,
-            ),
+            Text(error!, textAlign: TextAlign.center),
             ElevatedButton(
-              onPressed: _loadCrops,
-              child: Text('Retry'),
-            ),
+                onPressed: _initializeScreen, child: const Text('Retry')),
           ],
         ),
       );
     }
 
     if (crops.isEmpty) {
-      return Center(
-        child: Text(
-          'No crops available',
-          style: TextStyle(color: Colors.white),
-        ),
-      );
+      return Center(child: Text('No crops available'));
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(0),
       itemCount: crops.length,
       itemBuilder: (ctx, index) => CropCard(
         crops[index],
@@ -130,38 +353,27 @@ class _MandiScreenState extends State<MandiScreen> {
     );
   }
 
-  // ... rest of your existing code (_header and _goToTutorial methods)
+  String? getStateNameFromId(String? stateId) {
+    if (stateId == null) return null;
+
+    try {
+      var state = states.firstWhere((state) => state['state_id'] == stateId);
+      return state['state_name']; // Assuming 'state_name' holds the name
+    } catch (e) {
+      // Handle the case where no matching state is found
+      return null;
+    }
+  }
+
+  String? getApmcNameFromId(String? apmcId) {
+    if (apmcId == null) return null;
+
+    try {
+      var apmc = apmcs.firstWhere((apmc) => apmc['apmc_id'] == apmcId);
+      return apmc['apmc_name']; // Assuming 'apmc_name' holds the name
+    } catch (e) {
+      // Handle the case where no matching APMC is found
+      return null;
+    }
+  }
 }
-
-
-// class Crop {
-//   final String name;
-//   final String location;
-//   final String quantity;
-//   final String modalPrice;
-//   final String minPrice;
-//   final String maxPrice;
-//   final String lastUpdated;
-
-//   Crop({
-//     required this.name,
-//     required this.location,
-//     required this.quantity,
-//     required this.modalPrice,
-//     required this.minPrice,
-//     required this.maxPrice,
-//     required this.lastUpdated,
-//   });
-
-//   factory Crop.fromJson(Map<String, dynamic> json) {
-//     return Crop(
-//       name: json['name'] ?? '',
-//       location: json['location'] ?? '',
-//       quantity: json['quantity'] ?? '',
-//       modalPrice: json['modal_price']?.toString() ?? '',
-//       minPrice: json['min_price']?.toString() ?? '',
-//       maxPrice: json['max_price']?.toString() ?? '',
-//       lastUpdated: json['last_updated'] ?? '',
-//     );
-//   }
-// }
