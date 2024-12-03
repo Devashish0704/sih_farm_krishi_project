@@ -227,6 +227,15 @@ class ProductDatabaseHelper {
     }
     return productsId;
   }
+  // Future<List<String>> get allProductsList async {
+  //   final products = await firestore.collection(PRODUCTS_COLLECTION_NAME).get();
+  //   List<String> productsId = [];
+  //   for (final product in products.docs) {
+  //     final id = product.id;
+  //     productsId.add(id);
+  //   }
+  //   return productsId;
+  // }
 
   Future<bool> updateProductsImages(
       String productId, List<String> imgUrl) async {
