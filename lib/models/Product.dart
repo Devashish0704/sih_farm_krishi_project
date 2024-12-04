@@ -25,6 +25,8 @@ class Product extends Model {
   static const String CATEGORY_KEY = "category";
   static const String VARIANT_KEY = "variant";
   static const String ORIGINAL_PRICE_KEY = "price";
+  static const String PREDICTIVE_PRICE_KEY = "predictiveprice";
+  static const String POINT_RATING_KEY = "pointRating";
   static const String RATING_KEY = "rating";
   static const String POINT_RATING_KEY = "pointRating";
   static const String HIGHLIGHTS_KEY = "highlights";
@@ -45,6 +47,8 @@ class Product extends Model {
   String? category;
   String? variant;
   num? price;
+  num? predictivePrice;
+  num? pointRating;
   num? rating = 5;
   num? pointRating;
   String? highlights;
@@ -74,6 +78,8 @@ class Product extends Model {
     this.category,
     this.variant,
     this.price,
+    this.predictivePrice,
+    this.pointRating,
     this.rating = 5,
     this.pointRating,
     this.highlights,
@@ -109,6 +115,8 @@ class Product extends Model {
       category: data[CATEGORY_KEY] as String? ?? '',
       variant: data[VARIANT_KEY] as String?,
       price: (data[ORIGINAL_PRICE_KEY] ?? 0).toDouble(),
+      predictivePrice: (data[PREDICTIVE_PRICE_KEY] ?? 0).toDouble(),
+      pointRating: (data[POINT_RATING_KEY] ?? 0).toDouble(),
       rating: (data[RATING_KEY] ?? 0).toDouble(),
       pointRating: (data[POINT_RATING_KEY] ?? 0).toDouble(),
       highlights: data[HIGHLIGHTS_KEY] as String?,
@@ -151,6 +159,8 @@ class Product extends Model {
       category: data[CATEGORY_KEY] as String? ?? '',
       variant: data[VARIANT_KEY] as String?,
       price: (data[ORIGINAL_PRICE_KEY] ?? 0).toDouble(),
+      predictivePrice: (data[PREDICTIVE_PRICE_KEY] ?? 0).toDouble(),
+      pointRating: (data[POINT_RATING_KEY] ?? 0).toDouble(),
       rating: (data[RATING_KEY] ?? 0).toDouble(),
       pointRating: (data[POINT_RATING_KEY] ?? 0).toDouble(),
       highlights: data[HIGHLIGHTS_KEY] as String?,
@@ -197,6 +207,8 @@ class Product extends Model {
       CATEGORY_KEY: category,
       VARIANT_KEY: variant,
       ORIGINAL_PRICE_KEY: price,
+      PREDICTIVE_PRICE_KEY: predictivePrice,
+      POINT_RATING_KEY: pointRating,
       RATING_KEY: rating,
       POINT_RATING_KEY: pointRating,
       HIGHLIGHTS_KEY: highlights,
@@ -226,6 +238,8 @@ class Product extends Model {
     if (category != null) map[CATEGORY_KEY] = category;
     if (variant != null) map[VARIANT_KEY] = variant;
     if (price != null) map[ORIGINAL_PRICE_KEY] = price;
+    if (predictivePrice != null) map[PREDICTIVE_PRICE_KEY] = predictivePrice;
+    if (pointRating != null) map[POINT_RATING_KEY] = pointRating;
     map[RATING_KEY] = rating;
     map[POINT_RATING_KEY] = pointRating;
     if (highlights != null) map[HIGHLIGHTS_KEY] = highlights;

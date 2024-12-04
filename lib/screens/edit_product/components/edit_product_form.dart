@@ -46,14 +46,11 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
 
   // Step 8: Order and Pricing Details
   int? _minimumOrderQuantity;
-  double? _price;
-  int? _quantity;
-  String? _quantityUnit;
-  bool _isPriceNegotaible = false;
-  bool _isDeliveryAvailable = false;
 
-  //step 9 : storage method
-  //String? _storage
+  int? _quantity;
+  // String? _quantityUnit;
+  bool _isPriceNegotiable = false;
+  bool _isDeliveryAvailable = false;
 
   // Step 9: Product Images
   List<File> _productImages = [];
@@ -61,6 +58,12 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
   List<String> _certificateImagesURL = [];
 
   // Position? _position;
+
+  double? _predictedPrice;
+  double? _price;
+  String? _rating;
+
+  TextEditingController _priceController = TextEditingController();
 
   void _nextStep() {
     if (_validateCurrentStep()) {
@@ -93,12 +96,32 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
       case 6:
         return _selectedGrade != null;
       case 7:
-        return _minimumOrderQuantity != null && _price != null;
+        return _minimumOrderQuantity != null;
+      // return _minimumOrderQuantity != null && _price != null;
       case 8:
         return _productImages.isNotEmpty;
+      // case 9:
+      //   return true; // Review step always valid
       default:
         return true;
     }
+  }
+
+  // Helper method to build review sections
+  Widget _buildReviewSection(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title + ':',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Text(value),
+        ],
+      ),
+    );
   }
 
   void _uploadCertificationImages() async {
@@ -144,7 +167,26 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
     }
   }
 
-  void _submitProduct() async {
+  String _getRating() {
+    try {
+      return "8.5";
+    } catch (e) {
+      print(e);
+      return "0.0"; // Default value in case of an error
+    }
+  }
+
+  double _getPredictedPossiblePrice() {
+    try {
+      return 3500.0;
+    } catch (e) {
+      print(e);
+      return 0.0; // Default value in case of an error
+    }
+  }
+
+  void _submitProduct(
+      double predictedPrice, double price, String rating) async {
     try {
       //step 1 upload product image
       while (_productImages.isNotEmpty) {
@@ -171,12 +213,14 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
         name: "${_selectedVariety}",
         category: _selectedCategory,
         variant: _selectedVariety,
-        price: double.parse(_price.toString()),
+        price: double.parse(price.toString()),
+        predictivePrice: double.parse(predictedPrice.toString()),
+        pointRating: double.parse(rating),
         rating: widget.product?.rating ?? 0,
 
         seed_company: _selectedSeedCompany,
         quantity: int.parse(_quantity.toString()),
-        quantityName: _quantityUnit,
+        quantityName: "QN",
         //  phoneNumber: _phoneNumberController.text,
         position: await Geolocator.getCurrentPosition(),
         images: _productImagesURLS,
@@ -190,7 +234,7 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
         //  storageMethod: _storageMethodController.text,
         grade: _selectedGrade,
         minimumOrderQuantity: int.tryParse(_minimumOrderQuantity.toString()),
-        isPriceNegotiable: _isPriceNegotaible,
+        isPriceNegotiable: _isPriceNegotiable,
         isDeliveryAvailable: _isDeliveryAvailable,
       );
       print(product.productType);
@@ -208,6 +252,18 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
     }
     // Here you would implement your product submission logic
     // This would involve creating a Product object and saving it to your database
+  }
+
+  // Add a method to get a formatted string for various fields
+  String _getFormattedValue(dynamic value) {
+    if (value == null) return 'Not Selected';
+    if (value is DateTime) {
+      return '${value.day}/${value.month}/${value.year}';
+    }
+    if (value is bool) {
+      return value ? 'Yes' : 'No';
+    }
+    return value.toString();
   }
 
   @override
@@ -408,6 +464,18 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
             title: Text('Order and Pricing'),
             content: Column(
               children: [
+                //
+                TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Total Quantity',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    _quantity = int.tryParse(value);
+                  },
+                ),
+                SizedBox(height: 16),
                 TextFormField(
                   decoration: InputDecoration(
                     labelText: 'Minimum Order Quantity',
@@ -418,67 +486,58 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
                     _minimumOrderQuantity = int.tryParse(value);
                   },
                 ),
-                SizedBox(height: 16),
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Price per Unit',
-                    prefixText: '₹ ',
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  onChanged: (value) {
-                    _price = double.tryParse(value);
-                  },
-                ),
-                SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Total Quantity',
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          _quantity = int.tryParse(value);
-                        },
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        value: _quantityUnit,
-                        items: quantityUnits
-                            .map((unit) => DropdownMenuItem(
-                                  value: unit,
-                                  child: Text(unit),
-                                ))
-                            .toList(),
-                        onChanged: (value) => setState(() {
-                          _quantityUnit = value;
-                        }),
-                        decoration: InputDecoration(
-                          labelText: 'Unit',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                //  SizedBox(height: 16),
+                // TextFormField(
+                //   decoration: InputDecoration(
+                //     labelText: 'Price per Unit',
+                //     prefixText: '₹ ',
+                //     border: OutlineInputBorder(),
+                //   ),
+                //   keyboardType: TextInputType.numberWithOptions(decimal: true),
+                //   onChanged: (value) {
+                //     _price = double.tryParse(value);
+                //   },
+                // ),
+
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       flex: 2,
+                //       child:
+                //     ),
+                //     SizedBox(width: 16),
+                //     Expanded(
+                //       child: DropdownButtonFormField<String>(
+                //         value: _quantityUnit,
+                //         items: quantityUnits
+                //             .map((unit) => DropdownMenuItem(
+                //                   value: unit,
+                //                   child: Text(unit),
+                //                 ))
+                //             .toList(),
+                //         onChanged: (value) => setState(() {
+                //           _quantityUnit = value;
+                //         }),
+                //         decoration: InputDecoration(
+                //           labelText: 'Unit',
+                //           border: OutlineInputBorder(),
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
                 SizedBox(
                   height: 2,
                 ),
-                SwitchListTile(
-                  title: Text('Is Price Negotiable?'),
-                  value: _isPriceNegotaible,
-                  onChanged: (bool value) {
-                    setState(() {
-                      _isPriceNegotaible = value;
-                    });
-                  },
-                ),
+                // SwitchListTile(
+                //   title: Text('Is Price Negotiable?'),
+                //   value: _isPriceNegotaible,
+                //   onChanged: (bool value) {
+                //     setState(() {
+                //       _isPriceNegotaible = value;
+                //     });
+                //   },
+                // ),
                 SizedBox(
                   height: 2,
                 ),
@@ -525,6 +584,13 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
               ],
             ),
           ),
+          //   // New Step 9: Review Details
+          //   Step(
+          //     title: Text('Review Details'),
+          //     content: SingleChildScrollView(
+          //       child: reviewCard(context),
+          //     ),
+          //   ),
         ],
         controlsBuilder: (BuildContext context, ControlsDetails details) {
           return Row(
@@ -535,8 +601,9 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
                   child: Text('Back'),
                 ),
               ElevatedButton(
-                onPressed:
-                    _currentStep < 8 ? details.onStepContinue : _submitProduct,
+                onPressed: _currentStep < 8
+                    ? details.onStepContinue
+                    : () => _showReviewBottomSheet(context),
                 child: Text(_currentStep < 8 ? 'Next' : 'Submit'),
               ),
             ],
@@ -545,10 +612,303 @@ class _ProductUploadFormState extends State<ProductUploadForm> {
       ),
     );
   }
+
+  Widget reviewCard(BuildContext context) {
+    return Card(
+      elevation: 4,
+      margin: EdgeInsets.all(8),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildReviewSection(
+                'Product Type', _getFormattedValue(_selectedProductType)),
+            _buildReviewSection(
+                'Category', _getFormattedValue(_selectedCategory)),
+            _buildReviewSection(
+                'Product', _getFormattedValue(_selectedProduct)),
+            _buildReviewSection(
+                'Variety', _getFormattedValue(_selectedVariety)),
+            _buildReviewSection(
+                'Seed Company', _getFormattedValue(_selectedSeedCompany)),
+            _buildReviewSection(
+                'Harvest Date', _getFormattedValue(_harvestDate)),
+            _buildReviewSection('Grade', _getFormattedValue(_selectedGrade)),
+            _buildReviewSection('Organic', _getFormattedValue(_isOrganic)),
+            _buildReviewSection('Minimum Order Quantity',
+                _getFormattedValue(_minimumOrderQuantity)),
+            // _buildReviewSection(
+            //     'Price',
+            //     _price != null
+            //         ? '₹ ${_price!.toStringAsFixed(2)}'
+            //         : 'Not Set'),
+            // _buildReviewSection('Quantity',
+            //     '${_getFormattedValue(_quantity)} ${_getFormattedValue(_quantityUnit)}'),
+            // _buildReviewSection(
+            //     'Price Negotiable', _getFormattedValue(_isPriceNegotaible)),
+            _buildReviewSection(
+                'Delivery Available', _getFormattedValue(_isDeliveryAvailable)),
+
+            // Product Images Preview
+            Text('Product Images:',
+                style: Theme.of(context).textTheme.titleMedium),
+            _productImages.isNotEmpty
+                ? GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                    ),
+                    itemCount: _productImages.length,
+                    itemBuilder: (context, index) {
+                      return Image.file(
+                        _productImages[index],
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  )
+                : Text('No images selected'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Method to show review bottom sheet
+  void _showReviewBottomSheet(BuildContext context) {
+    bool isReviewStep = true;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (BuildContext context, StateSetter setModalState) {
+          return DraggableScrollableSheet(
+            initialChildSize: 0.9,
+            minChildSize: 0.5,
+            maxChildSize: 0.95,
+            builder: (_, controller) => Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: ListView(
+                controller: controller,
+                children: [
+                  // Dynamic Header
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      isReviewStep
+                          ? 'Review Your Product Details'
+                          : 'Confirm Your Pricing',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+
+                  // Conditional Content
+                  isReviewStep
+                      ? reviewCard(context)
+                      : _buildPricingContent(context),
+
+                  // Navigation Buttons
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        if (!isReviewStep)
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setModalState(() {
+                                  isReviewStep = true;
+                                });
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey[300],
+                                foregroundColor: Colors.black,
+                              ),
+                              child: Text('Back'),
+                            ),
+                          ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (isReviewStep) {
+                                // Move to pricing step
+                                setModalState(() {
+                                  isReviewStep = false;
+                                });
+                              } else {
+                                // Final submission
+                                _confirmAndSubmit(context);
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal,
+                            ),
+                            child: Text(isReviewStep
+                                ? 'Next: Pricing'
+                                : 'Confirm and Submit'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // Build Pricing Content
+  Widget _buildPricingContent(BuildContext context) {
+    _predictedPrice = _getPredictedPossiblePrice();
+    _rating = _getRating();
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Predicted Price Card
+          Card(
+            elevation: 4,
+            color: Colors.teal[50],
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Text(
+                    'Your Rating is :',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    _rating != null ? _rating! : 'rating Not Available',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal[700],
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  SizedBox(height: 10),
+                  Text(
+                    'Predicted Price',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    _predictedPrice != null
+                        ? '₹ ${_predictedPrice!.toStringAsFixed(2)}'
+                        : 'Price Not Available',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal[700],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'This price is based on market trends and your product details',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.teal[600],
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          SizedBox(height: 20),
+
+          // Custom Price Input
+          Text(
+            'Adjust Price (Optional)',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 10),
+          TextField(
+            controller: _priceController,
+            decoration: InputDecoration(
+              labelText: 'Enter Custom Price',
+              prefixText: '₹ ',
+              border: OutlineInputBorder(),
+              helperText: 'Leave blank to use predicted price',
+            ),
+            keyboardType: TextInputType.numberWithOptions(decimal: true),
+          ),
+          SizedBox(height: 10),
+
+          SwitchListTile(
+            title: Text('Is Price Negotiable?'),
+            value: _isPriceNegotiable,
+            onChanged: (bool value) {
+              print(value);
+              setState(() {
+                _isPriceNegotiable = value;
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Method to handle final submission
+  void _confirmAndSubmit(BuildContext context) {
+    // Use custom price if provided, otherwise use original price
+    final finalPrice = _priceController.text.isNotEmpty
+        ? double.tryParse(_priceController.text)
+        : _predictedPrice;
+
+    // Validate final price
+    if (finalPrice == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Please enter a valid price')));
+      return;
+    }
+
+    // Update price with final value
+    setState(() {
+      _price = finalPrice;
+    });
+
+    // Close bottom sheet
+    Navigator.of(context).pop();
+
+    // Proceed with product submission
+    _submitProduct(_predictedPrice!, _price!, _rating!);
+  }
 }
-
-
-
 
 // import 'dart:io';
 // import 'package:e_commerce_app_flutter/components/async_progress_dialog.dart';
