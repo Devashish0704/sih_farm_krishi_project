@@ -183,7 +183,7 @@ class _BodyState extends State<Body> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         CategoryProductsScreen(
-                                      productType: productCategories[index]
+                                      category: productCategories[index]
                                           [PRODUCT_TYPE_KEY],
                                     ),
                                   ),

@@ -9,24 +9,24 @@ final List<Map<String, dynamic>> productCategories = [
   <String, dynamic>{
     ICON_KEY: "assets/icons/cereal.svg",
     TITLE_KEY: "Cereals",
-    PRODUCT_TYPE_KEY: ProductType.grainsAndPulses,
+    PRODUCT_TYPE_KEY: "Cereals",
   },
   <String, dynamic>{
     ICON_KEY: "assets/icons/fruits.svg",
     TITLE_KEY: "Fruits",
-    PRODUCT_TYPE_KEY: ProductType.freshProduce,
     // PRODUCT_TYPE_KEY: "Fruits",
+    PRODUCT_TYPE_KEY: "Fruits",
   },
   <String, dynamic>{
     ICON_KEY: "assets/icons/carrot.svg",
     TITLE_KEY: "Vegetables",
-    PRODUCT_TYPE_KEY: ProductType.freshProduce,
-    // PRODUCT_TYPE_KEY: "Vegitables",
+    //  PRODUCT_TYPE_KEY: ProductType.freshProduce,
+    PRODUCT_TYPE_KEY: "Vegetables",
   },
   <String, dynamic>{
     ICON_KEY: "assets/icons/wheat.svg",
     TITLE_KEY: "Pulses",
-    PRODUCT_TYPE_KEY: ProductType.grainsAndPulses,
+    PRODUCT_TYPE_KEY: "Pulses",
   },
   <String, dynamic>{
     ICON_KEY: "assets/icons/milk.svg",
