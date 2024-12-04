@@ -28,7 +28,6 @@ class Product extends Model {
   static const String PREDICTIVE_PRICE_KEY = "predictiveprice";
   static const String POINT_RATING_KEY = "pointRating";
   static const String RATING_KEY = "rating";
-  static const String POINT_RATING_KEY = "pointRating";
   static const String HIGHLIGHTS_KEY = "highlights";
   static const String DESCRIPTION_KEY = "description";
   static const String SEED_KEY = "seed_company";
@@ -50,7 +49,7 @@ class Product extends Model {
   num? predictivePrice;
   num? pointRating;
   num? rating = 5;
-  num? pointRating;
+  // num? pointRating;
   String? highlights;
   String? description;
   String? seed_company;
@@ -81,7 +80,7 @@ class Product extends Model {
     this.predictivePrice,
     this.pointRating,
     this.rating = 5,
-    this.pointRating,
+    // this.pointRating,
     this.highlights,
     this.description,
     this.seed_company,
@@ -118,7 +117,7 @@ class Product extends Model {
       predictivePrice: (data[PREDICTIVE_PRICE_KEY] ?? 0).toDouble(),
       pointRating: (data[POINT_RATING_KEY] ?? 0).toDouble(),
       rating: (data[RATING_KEY] ?? 0).toDouble(),
-      pointRating: (data[POINT_RATING_KEY] ?? 0).toDouble(),
+      // pointRating: (data[POINT_RATING_KEY] ?? 0).toDouble(),
       highlights: data[HIGHLIGHTS_KEY] as String?,
       description: data[DESCRIPTION_KEY] as String?,
       seed_company: data[SEED_KEY] as String?,
@@ -162,7 +161,7 @@ class Product extends Model {
       predictivePrice: (data[PREDICTIVE_PRICE_KEY] ?? 0).toDouble(),
       pointRating: (data[POINT_RATING_KEY] ?? 0).toDouble(),
       rating: (data[RATING_KEY] ?? 0).toDouble(),
-      pointRating: (data[POINT_RATING_KEY] ?? 0).toDouble(),
+      // pointRating: (data[POINT_RATING_KEY] ?? 0).toDouble(),
       highlights: data[HIGHLIGHTS_KEY] as String?,
       description: data[DESCRIPTION_KEY] as String?,
       seed_company: data[SEED_KEY] as String?,

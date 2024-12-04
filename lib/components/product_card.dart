@@ -92,7 +92,7 @@ class ProductCard extends StatelessWidget {
                 imageUrl: product.images?.isNotEmpty == true
                     ? product.images![0]
                     : 'https://farm2.staticflickr.com/1533/26541536141_41abe98db3_z_d.jpg',
-                height: 80,
+                height: 74,
                 width: double.infinity,
                 fit: BoxFit.cover,
                 placeholder: (context, url) =>

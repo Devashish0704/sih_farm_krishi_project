@@ -54,6 +54,24 @@ class ProductDatabaseHelper {
     return productsId.toList();
   }
 
+  Future<List<String>> searchInProductsByCategory(String category) async {
+    // Create a reference to the products collection
+    final queryRef = firestore
+        .collection(PRODUCTS_COLLECTION_NAME)
+        .where('category', isEqualTo: category); // Query by category
+
+    // Fetch the documents that match the query
+    final querySnapshot = await queryRef.get();
+
+    // Extract the product IDs from the documents
+    List<String> productIds = [];
+    for (final doc in querySnapshot.docs) {
+      productIds.add(doc.id); // Add the document ID to the list
+    }
+
+    return productIds; // Return the list of product IDs
+  }
+
   Future<bool> addProductReview(String productId, Review review) async {
     final reviewCollectionRef = firestore
         .collection(PRODUCTS_COLLECTION_NAME)
