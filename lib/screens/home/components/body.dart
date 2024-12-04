@@ -20,6 +20,7 @@ import '../components/home_header.dart';
 import 'product_type_box.dart';
 import 'products_section.dart';
 import 'product_categories.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class BestSearchProductsStream extends DataStream<List<String>> {
   @override
@@ -196,38 +197,27 @@ class _BodyState extends State<Body> {
                 ),
                 SizedBox(height: getProportionateScreenHeight(20)),
 
-                // Add toggle button and text here
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Switch(
-                      value: isBestSearch,
-                      onChanged: (value) {
-                        setState(() {
-                          isBestSearch = value;
-                          if (isBestSearch) {
-                            bestSearchProductsStream.reload();
-                          } else {
-                            nearbyProductsStream.reload();
-                          }
-                        });
-                      },
-                    ),
-                    Text(
-                      isBestSearch ? "Best Search Enabled" : "Nearby Products",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: getProportionateScreenHeight(5),
-                  child: Text(
-                    isBestSearch
-                        ? "Switch for nearby products"
-                        : "Switch for best search",
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
+                // Here, default theme colors are used for activeBgColor, activeFgColor, inactiveBgColor and inactiveFgColor
+                ToggleSwitch(
+                  initialLabelIndex: isBestSearch ? 1 : 0,
+                  totalSwitches: 2,
+                  labels: ['Nearby Products', 'Best Search '],
+                  activeBgColor: [Colors.green],
+                  inactiveBgColor: Colors.grey,
+                  activeFgColor: Colors.white,
+                  inactiveFgColor: Colors.black,
+                  minWidth: 180,
+                  onToggle: (index) {
+                    print('switched to: $index');
+                    setState(() {
+                      isBestSearch = (index == 1);
+                      if (isBestSearch) {
+                        bestSearchProductsStream.reload();
+                      } else {
+                        nearbyProductsStream.reload();
+                      }
+                    });
+                  },
                 ),
 
                 SizedBox(height: getProportionateScreenHeight(20)),
