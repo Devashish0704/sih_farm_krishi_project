@@ -77,10 +77,10 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  Column buildProductCardItems(Product product, BuildContext context) {
-    print(product);
+  buildProductCardItems(Product product, BuildContext context) {
+    // print(product);
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Stack(
           children: [
@@ -92,7 +92,7 @@ class ProductCard extends StatelessWidget {
                 imageUrl: product.images?.isNotEmpty == true
                     ? product.images![0]
                     : 'https://farm2.staticflickr.com/1533/26541536141_41abe98db3_z_d.jpg',
-                height: 130,
+                height: 80,
                 width: double.infinity,
                 fit: BoxFit.cover,
                 placeholder: (context, url) =>
@@ -100,14 +100,6 @@ class ProductCard extends StatelessWidget {
                 errorWidget: (context, url, error) =>
                     Icon(Icons.error, color: Colors.red),
               ),
-              // child: Image.network(
-              //   product.images != null
-              //       ? product.images![0]
-              //       : "https://farm2.staticflickr.com/1533/26541536141_41abe98db3_z_d.jpg",
-              //   fit: BoxFit.cover,
-              //   height: 130,
-              //   width: double.infinity,
-              // ),
             ),
             Positioned(
               top: 8, // Adjust this value for the vertical position

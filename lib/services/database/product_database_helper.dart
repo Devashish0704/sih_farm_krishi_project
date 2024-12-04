@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_commerce_app_flutter/farmer/models/User.dart';
 import 'package:e_commerce_app_flutter/models/Product.dart';
 import 'package:e_commerce_app_flutter/models/Review.dart';
 import 'package:e_commerce_app_flutter/services/authentification/authentification_service.dart';
@@ -225,7 +226,84 @@ class ProductDatabaseHelper {
       final id = product.id;
       productsId.add(id);
     }
+
     return productsId;
+  }
+
+  Future<List<Product>> getBestSearchProducts() async {
+    final productsSnapshot =
+        await firestore.collection(PRODUCTS_COLLECTION_NAME).get();
+    List<Product> products = [];
+
+    for (final doc in productsSnapshot.docs) {
+      final product = Product.fromMap(doc.data(), id: doc.id);
+      products.add(product);
+    }
+
+    products.sort((a, b) => (b.pointRating ?? 0).compareTo(a.pointRating ?? 0));
+    return products;
+  }
+
+  Future<List<Product>> getNearbyProducts() async {
+    // Fetch the current user's location dynamically
+    Position userLocation = await _determinePosition();
+
+    print(userLocation);
+
+    final productsSnapshot =
+        await firestore.collection(PRODUCTS_COLLECTION_NAME).get();
+    List<Product> products = [];
+
+    for (final doc in productsSnapshot.docs) {
+      final product = Product.fromMap(doc.data(), id: doc.id);
+      products.add(product);
+    }
+
+    // Sort products based on distance from user location
+    products.sort((a, b) {
+      final distanceA = Geolocator.distanceBetween(
+        userLocation.latitude,
+        userLocation.longitude,
+        a.position.latitude,
+        a.position.longitude,
+      );
+      final distanceB = Geolocator.distanceBetween(
+        userLocation.latitude,
+        userLocation.longitude,
+        b.position.latitude,
+        b.position.longitude,
+      );
+      return distanceA.compareTo(distanceB);
+    });
+
+    return products;
+  }
+
+  // Method to determine the current position of the user
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled, return a default position or handle accordingly
+      throw Exception('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        // Permissions are denied, handle accordingly
+        throw Exception('Location permissions are denied');
+      }
+    }
+
+    // When we reach here, permissions are granted, and we can get the location
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
   }
 
   Future<bool> updateProductsImages(
@@ -254,5 +332,16 @@ class ProductDatabaseHelper {
 
   String getPathForProductImage(String id, int index) {
     return "products/images/${id}_$index";
+  }
+
+  // Implement this method to fetch the current user
+  Future<User> getCurrentUser() async {
+    // Fetch the user from Firestore or wherever you store user data
+    // This is just a placeholder; implement your logic to get the current user
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc('currentUserId')
+        .get();
+    return User.fromFirestore(userDoc);
   }
 }

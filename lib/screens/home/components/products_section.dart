@@ -12,6 +12,7 @@ class ProductsSection extends StatelessWidget {
   final DataStream productsStreamController;
   final String emptyListMessage;
   final Function onProductCardTapped;
+
   const ProductsSection({
     required this.sectionTitle,
     required this.productsStreamController,
@@ -21,7 +22,6 @@ class ProductsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //  print(productsStreamController);
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: 14,
@@ -32,6 +32,7 @@ class ProductsSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SectionTile(
             title: sectionTitle,
@@ -47,41 +48,37 @@ class ProductsSection extends StatelessWidget {
   }
 
   Widget buildProductsList() {
-    return StreamBuilder(
-      stream: productsStreamController.stream,
+    return StreamBuilder<List<String>>(
+      stream: productsStreamController.stream as Stream<List<String>>,
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          // print("data is ${snapshot.data}");
-          if (snapshot.data == 0) {
-            return Center(
-              child: NothingToShowContainer(
-                secondaryMessage: emptyListMessage,
-              ),
-            );
-          }
-          return buildProductGrid(snapshot.data! as List<String>);
-        } else if (snapshot.connectionState == ConnectionState.waiting) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasError) {
           final error = snapshot.error;
-          //   print(error);
           Logger().w(error.toString());
+          return Center(
+            child: NothingToShowContainer(
+              iconPath: "assets/icons/network_error.svg",
+              primaryMessage: "Something went wrong",
+              secondaryMessage: "Unable to connect to Database",
+            ),
+          );
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(
+            child: NothingToShowContainer(
+              secondaryMessage: emptyListMessage,
+            ),
+          );
         }
-        return Center(
-          child: NothingToShowContainer(
-            iconPath: "assets/icons/network_error.svg",
-            primaryMessage: "Something went wrong",
-            secondaryMessage: "Unable to connect to Database",
-          ),
-        );
+
+        return buildProductGrid(snapshot.data!);
       },
     );
   }
 
   Widget buildProductGrid(List<String> productsId) {
-    // print(productsId);
     return GridView.builder(
       shrinkWrap: true,
       physics: BouncingScrollPhysics(),
