@@ -78,7 +78,7 @@ class ProductCard extends StatelessWidget {
   }
 
   Column buildProductCardItems(Product product, BuildContext context) {
-    print(product);
+    // print(product);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [

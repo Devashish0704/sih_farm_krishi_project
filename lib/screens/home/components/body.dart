@@ -67,7 +67,7 @@ class _BodyState extends State<Body> {
   @override
   void initState() {
     super.initState();
-    print("initState");
+
     favouriteProductsStream.init();
     allProductsStream.init();
   }

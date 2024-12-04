@@ -22,6 +22,7 @@ class ProductsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //  print(productsStreamController);
+    print("sectionTitle is $sectionTitle");
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: 14,

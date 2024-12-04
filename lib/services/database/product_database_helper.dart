@@ -43,13 +43,14 @@ class ProductDatabaseHelper {
     for (final doc in queryRefDocs.docs) {
       final product = Product.fromMap(doc.data(), id: doc.id);
       if (product.name!.toLowerCase().contains(query) ||
-          product.description!.toLowerCase().contains(query) ||
-          product.highlights.toString().toLowerCase().contains(query) ||
+          // product.description!.toLowerCase().contains(query) ||
+          // product.highlights.toString().toLowerCase().contains(query) ||
           product.variant.toString().toLowerCase().contains(query) ||
           product.seed_company!.toLowerCase().contains(query)) {
         productsId.add(product.id);
       }
     }
+    print(productsId);
     return productsId.toList();
   }
 

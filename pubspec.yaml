@@ -39,6 +39,7 @@ dependencies:
   intl: ^0.19.0
   logger: ^2.4.0
   permission_handler: ^11.3.1
+  flutter_gemini: ^3.0.0
   # youtube_player_flutter: ^9.0.3
   # pinch_zoom_image_updated: ^0.2.6
   provider: ^6.1.2
