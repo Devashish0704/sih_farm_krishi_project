@@ -269,8 +269,8 @@ class UserDatabaseHelper {
         .where('buyer_id', isEqualTo: uid)
         .get();
 
-    print(
-        "ordered products ${orderedProductsSnapshot.docs.map((doc) => doc.id).toList()}");
+    // print(
+    //     "ordered products ${orderedProductsSnapshot.docs.map((doc) => doc.id).toList()}");
     return orderedProductsSnapshot.docs.map((doc) => doc.id).toList();
   }
   // Future<List<String>> get orderedProductsList async {
