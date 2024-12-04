@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:e_commerce_app_flutter/components/async_progress_dialog.dart';
 import 'package:e_commerce_app_flutter/constants.dart';
 import 'package:e_commerce_app_flutter/models/Product.dart';
@@ -7,6 +9,7 @@ import 'package:e_commerce_app_flutter/screens/product_details/product_details_s
 import 'package:e_commerce_app_flutter/screens/search_result/search_result_screen.dart';
 import 'package:e_commerce_app_flutter/services/authentification/authentification_service.dart';
 import 'package:e_commerce_app_flutter/services/data_streams/all_products_stream.dart';
+import 'package:e_commerce_app_flutter/services/data_streams/data_stream.dart';
 import 'package:e_commerce_app_flutter/services/data_streams/favourite_products_stream.dart';
 import 'package:e_commerce_app_flutter/services/database/product_database_helper.dart';
 import 'package:e_commerce_app_flutter/size_config.dart';
@@ -16,10 +19,33 @@ import '../../../utils.dart';
 import '../components/home_header.dart';
 import 'product_type_box.dart';
 import 'products_section.dart';
+import 'product_categories.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
-const String ICON_KEY = "icon";
-const String TITLE_KEY = "title";
-const String PRODUCT_TYPE_KEY = "product_type";
+class BestSearchProductsStream extends DataStream<List<String>> {
+  @override
+  void reload() async {
+    try {
+      final bestSearchProducts =
+          await ProductDatabaseHelper().getBestSearchProducts();
+      addData(bestSearchProducts.map((product) => product.id).toList());
+    } catch (e) {
+      addError(e);
+    }
+  }
+}
+
+class NearbyProductsStream extends DataStream<List<String>> {
+  @override
+  void reload() async {
+    try {
+      final nearbyProducts = await ProductDatabaseHelper().getNearbyProducts();
+      addData(nearbyProducts.map((product) => product.id).toList());
+    } catch (e) {
+      addError(e);
+    }
+  }
+}
 
 class Body extends StatefulWidget {
   @override
@@ -27,42 +53,15 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  final productCategories = <Map>[
-    <String, dynamic>{
-      ICON_KEY: "assets/icons/Others.svg",
-      TITLE_KEY: "Cereals",
-      PRODUCT_TYPE_KEY: ProductType.animalFeed,
-    },
-    <String, dynamic>{
-      ICON_KEY: "assets/icons/Others.svg",
-      TITLE_KEY: "Fruits",
-      PRODUCT_TYPE_KEY: ProductType.animalFeed,
-    },
-    <String, dynamic>{
-      ICON_KEY: "assets/icons/Others.svg",
-      TITLE_KEY: "Pulses",
-      PRODUCT_TYPE_KEY: ProductType.animalFeed,
-    },
-    <String, dynamic>{
-      ICON_KEY: "assets/icons/Others.svg",
-      TITLE_KEY: "Vegetables",
-      PRODUCT_TYPE_KEY: ProductType.animalFeed,
-    },
-    <String, dynamic>{
-      ICON_KEY: "assets/icons/Others.svg",
-      TITLE_KEY: "waste",
-      PRODUCT_TYPE_KEY: ProductType.animalFeed,
-    },
-    <String, dynamic>{
-      ICON_KEY: "assets/icons/Others.svg",
-      TITLE_KEY: "Others",
-      PRODUCT_TYPE_KEY: ProductType.animalFeed,
-    },
-  ];
-
   final FavouriteProductsStream favouriteProductsStream =
       FavouriteProductsStream();
   final AllProductsStream allProductsStream = AllProductsStream();
+
+  final BestSearchProductsStream bestSearchProductsStream =
+      BestSearchProductsStream();
+  final NearbyProductsStream nearbyProductsStream = NearbyProductsStream();
+
+  bool isBestSearch = false; // Toggle state
 
   @override
   void initState() {
@@ -70,12 +69,16 @@ class _BodyState extends State<Body> {
 
     favouriteProductsStream.init();
     allProductsStream.init();
+    bestSearchProductsStream.init();
+    nearbyProductsStream.init();
   }
 
   @override
   void dispose() {
     favouriteProductsStream.dispose();
     allProductsStream.dispose();
+    bestSearchProductsStream.dispose();
+    nearbyProductsStream.dispose();
     super.dispose();
   }
 
@@ -194,25 +197,48 @@ class _BodyState extends State<Body> {
                   ),
                 ),
                 SizedBox(height: getProportionateScreenHeight(20)),
-                // SizedBox(
-                //   height: SizeConfig.screenHeight * 0.5,
-                //   child: ProductsSection(
-                //     sectionTitle: "Products You Like",
-                //     productsStreamController: favouriteProductsStream,
-                //     emptyListMessage: "Add Product to Favourites",
-                //     onProductCardTapped: onProductCardTapped,
-                //   ),
-                // ),
+
+                // Here, default theme colors are used for activeBgColor, activeFgColor, inactiveBgColor and inactiveFgColor
+                ToggleSwitch(
+                  initialLabelIndex: isBestSearch ? 1 : 0,
+                  totalSwitches: 2,
+                  labels: ['Nearby Products', 'Best Search '],
+                  activeBgColor: [Colors.green],
+                  inactiveBgColor: Colors.grey,
+                  activeFgColor: Colors.white,
+                  inactiveFgColor: Colors.black,
+                  minWidth: 180,
+                  onToggle: (index) {
+                    print('switched to: $index');
+                    setState(() {
+                      isBestSearch = (index == 1);
+                      if (isBestSearch) {
+                        bestSearchProductsStream.reload();
+                      } else {
+                        nearbyProductsStream.reload();
+                      }
+                    });
+                  },
+                ),
+
                 SizedBox(height: getProportionateScreenHeight(20)),
+
                 SizedBox(
                   height: SizeConfig.screenHeight * 0.8,
                   child: ProductsSection(
-                    sectionTitle: "Explore All Products",
-                    productsStreamController: allProductsStream,
-                    emptyListMessage: "Looks like all Stores are closed",
+                    sectionTitle: isBestSearch
+                        ? "Best Rated Products"
+                        : "Nearby Products",
+                    productsStreamController: isBestSearch
+                        ? bestSearchProductsStream
+                        : nearbyProductsStream,
+                    emptyListMessage: isBestSearch
+                        ? "No highly rated products available"
+                        : "No nearby products available",
                     onProductCardTapped: onProductCardTapped,
                   ),
                 ),
+
                 SizedBox(height: getProportionateScreenHeight(80)),
               ],
             ),

@@ -3,7 +3,7 @@ import 'package:e_commerce_app_flutter/farmer/services/UserInfoProvider.dart';
 import 'package:e_commerce_app_flutter/farmer/widgets/crop_inside_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:marquee/marquee.dart';
+// import 'package:marquee/marquee.dart';
 import 'package:provider/provider.dart';
 import 'package:weather/weather.dart';
 import '../routing/Application.dart';
@@ -112,24 +112,24 @@ class _FarmerHomeScreenState extends State<FarmerHomeScreen> {
     return Container(
       height: 40,
       color: Colors.green[50],
-      child: Marquee(
-        text:
-            'Latest Updates: Market prices rising | New fertilizer subsidies announced | Upcoming agricultural expo | Important rainfall predictions',
-        style: TextStyle(
-          fontSize: 16,
-          color: Colors.green[800],
-        ),
-        scrollAxis: Axis.horizontal,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        blankSpace: 20.0,
-        velocity: 50.0,
-        pauseAfterRound: Duration(seconds: 1),
-        startPadding: 10.0,
-        accelerationDuration: Duration(seconds: 1),
-        accelerationCurve: Curves.linear,
-        decelerationDuration: Duration(milliseconds: 500),
-        decelerationCurve: Curves.easeOut,
-      ),
+      // child: Marquee(
+      //   text:
+      //       'Latest Updates: Market prices rising | New fertilizer subsidies announced | Upcoming agricultural expo | Important rainfall predictions',
+      //   style: TextStyle(
+      //     fontSize: 16,
+      //     color: Colors.green[800],
+      //   ),
+      //   scrollAxis: Axis.horizontal,
+      //   crossAxisAlignment: CrossAxisAlignment.start,
+      //   blankSpace: 20.0,
+      //   velocity: 50.0,
+      //   pauseAfterRound: Duration(seconds: 1),
+      //   startPadding: 10.0,
+      //   accelerationDuration: Duration(seconds: 1),
+      //   accelerationCurve: Curves.linear,
+      //   decelerationDuration: Duration(milliseconds: 500),
+      //   decelerationCurve: Curves.easeOut,
+      // ),
     );
   }
 

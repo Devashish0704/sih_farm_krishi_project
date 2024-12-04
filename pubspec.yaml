@@ -64,10 +64,15 @@ dependencies:
   smooth_page_indicator: ^1.2.0+3
   shimmer: ^3.0.0
   http: 
-  webview_flutter: ^4.10.0
+  webview_flutter: 
   line_icons: ^2.0.3
-  marquee: ^2.3.0
+  # marquee: ^2.2.3
   carousel_slider: ^5.0.0
+
+
+  toggle_switch: ^2.3.0
+
+  
 
 dev_dependencies:
   flutter_test:
