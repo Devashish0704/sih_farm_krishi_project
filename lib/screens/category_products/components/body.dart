@@ -15,15 +15,17 @@ import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
 
 class Body extends StatefulWidget {
-  final ProductType productType;
+  final String category;
+  // final ProductType productType;
 
   Body({
-    required this.productType,
+    required this.category,
+    // required this.productType,
   });
 
   @override
   _BodyState createState() =>
-      _BodyState(categoryProductsStream: CategoryProductsStream(productType));
+      _BodyState(categoryProductsStream: CategoryProductsStream(category));
 }
 
 class _BodyState extends State<Body> {
@@ -76,7 +78,8 @@ class _BodyState extends State<Body> {
                             return Center(
                               child: NothingToShowContainer(
                                 secondaryMessage:
-                                    "No Products in ${EnumToString.convertToString(widget.productType)}",
+                                    "No Products in ${widget.category}",
+                                // "No Products in ${EnumToString.convertToString(widget.productType)}",
                               ),
                             );
                           }
@@ -129,9 +132,12 @@ class _BodyState extends State<Body> {
               if (query.length <= 0) return;
               List<String> searchedProductsId;
               try {
-                searchedProductsId = await ProductDatabaseHelper()
-                    .searchInProducts(query.toLowerCase(),
-                        productType: widget.productType);
+                searchedProductsId =
+                    await ProductDatabaseHelper().searchInProducts(
+                  query.toLowerCase(),
+                  category: widget.category,
+                  //   productType: widget.productType,
+                );
                 if (searchedProductsId != null) {
                   await Navigator.push(
                     context,
@@ -139,8 +145,8 @@ class _BodyState extends State<Body> {
                       builder: (context) => SearchResultScreen(
                         searchQuery: query,
                         searchResultProductsId: searchedProductsId,
-                        searchIn:
-                            EnumToString.convertToString(widget.productType),
+                        searchIn: widget.category,
+                        // EnumToString.convertToString(widget.productType),
                       ),
                     ),
                   );
@@ -190,7 +196,8 @@ class _BodyState extends State<Body> {
           child: Padding(
             padding: const EdgeInsets.only(left: 16),
             child: Text(
-              EnumToString.convertToString(widget.productType),
+              widget.category,
+              // EnumToString.convertToString(widget.productType),
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w900,
@@ -253,14 +260,14 @@ class _BodyState extends State<Body> {
   }
 
   String bannerFromProductType() {
-    switch (widget.productType) {
+    switch (widget.category) {
       // case ProductType.Cereals:
       //   return "assets/images/arts_banner.jpg";
-      case ProductType.animalFeed:
+      case "animalFeed":
         return "assets/images/arts_banner.jpg";
-      case ProductType.beverages:
+      case "beverages":
         return "assets/images/arts_banner.jpg";
-      case ProductType.dairyProducts:
+      case "dairyProducts":
         return "assets/images/arts_banner.jpg";
       // case ProductType.Vegetables:
       //   return "assets/images/arts_banner.jpg";

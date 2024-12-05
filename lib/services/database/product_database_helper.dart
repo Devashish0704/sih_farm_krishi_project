@@ -22,15 +22,15 @@ class ProductDatabaseHelper {
   FirebaseFirestore get firestore => _firebaseFirestore;
 
   Future<List<String>> searchInProducts(String query,
-      {ProductType? productType}) async {
+      {String? category}) async {
     Query<Map<String, dynamic>> queryRef;
-    if (productType == null) {
+    if (category == null) {
       queryRef = firestore.collection(PRODUCTS_COLLECTION_NAME);
     } else {
-      final productTypeStr = EnumToString.convertToString(productType);
+      // final categStr = EnumToString.convertToString(productType);
       queryRef = firestore
           .collection(PRODUCTS_COLLECTION_NAME)
-          .where(Product.PRODUCT_TYPE_KEY, isEqualTo: productTypeStr);
+          .where(Product.CATEGORY_KEY, isEqualTo: category);
     }
 
     Set<String> productsId = {};
@@ -44,15 +44,49 @@ class ProductDatabaseHelper {
     for (final doc in queryRefDocs.docs) {
       final product = Product.fromMap(doc.data(), id: doc.id);
       if (product.name!.toLowerCase().contains(query) ||
-          product.description!.toLowerCase().contains(query) ||
-          product.highlights.toString().toLowerCase().contains(query) ||
+          // product.description!.toLowerCase().contains(query) ||
+          // product.highlights.toString().toLowerCase().contains(query) ||
           product.variant.toString().toLowerCase().contains(query) ||
           product.seed_company!.toLowerCase().contains(query)) {
         productsId.add(product.id);
       }
     }
+    print(productsId);
     return productsId.toList();
   }
+  // Future<List<String>> searchInProducts(String query,
+  //     {ProductType? productType}) async {
+  //   Query<Map<String, dynamic>> queryRef;
+  //   if (productType == null) {
+  //     queryRef = firestore.collection(PRODUCTS_COLLECTION_NAME);
+  //   } else {
+  //     final productTypeStr = EnumToString.convertToString(productType);
+  //     queryRef = firestore
+  //         .collection(PRODUCTS_COLLECTION_NAME)
+  //         .where(Product.PRODUCT_TYPE_KEY, isEqualTo: productTypeStr);
+  //   }
+
+  //   Set<String> productsId = {};
+  //   // final querySearchInTags = await queryRef
+  //   //     .where(Product.SEARCH_TAGS_KEY, arrayContains: query)
+  //   //     .get();
+  //   // for (final doc in querySearchInTags.docs) {
+  //   //   productsId.add(doc.id);
+  //   // }
+  //   final queryRefDocs = await queryRef.get();
+  //   for (final doc in queryRefDocs.docs) {
+  //     final product = Product.fromMap(doc.data(), id: doc.id);
+  //     if (product.name!.toLowerCase().contains(query) ||
+  //         // product.description!.toLowerCase().contains(query) ||
+  //         // product.highlights.toString().toLowerCase().contains(query) ||
+  //         product.variant.toString().toLowerCase().contains(query) ||
+  //         product.seed_company!.toLowerCase().contains(query)) {
+  //       productsId.add(product.id);
+  //     }
+  //   }
+  //   print(productsId);
+  //   return productsId.toList();
+  // }
 
   Future<List<String>> searchInProductsByCategory(String category) async {
     // Create a reference to the products collection
@@ -205,12 +239,11 @@ class ProductDatabaseHelper {
     return docRef.id;
   }
 
-  Future<List<String>> getCategoryProductsList(ProductType productType) async {
+  Future<List<String>> getCategoryProductsList(String category) async {
     final productsCollectionReference =
         firestore.collection(PRODUCTS_COLLECTION_NAME);
     final queryResult = await productsCollectionReference
-        .where(Product.PRODUCT_TYPE_KEY,
-            isEqualTo: EnumToString.convertToString(productType))
+        .where(Product.CATEGORY_KEY, isEqualTo: category)
         .get();
     List<String> productsId = [];
     for (final product in queryResult.docs) {
@@ -219,6 +252,21 @@ class ProductDatabaseHelper {
     }
     return productsId;
   }
+
+  // Future<List<String>> getCategoryProductsList(ProductType productType) async {
+  //   final productsCollectionReference =
+  //       firestore.collection(PRODUCTS_COLLECTION_NAME);
+  //   final queryResult = await productsCollectionReference
+  //       .where(Product.PRODUCT_TYPE_KEY,
+  //           isEqualTo: EnumToString.convertToString(productType))
+  //       .get();
+  //   List<String> productsId = [];
+  //   for (final product in queryResult.docs) {
+  //     final id = product.id;
+  //     productsId.add(id);
+  //   }
+  //   return productsId;
+  // }
 
   Future<List<String>> get usersProductsList async {
     String? uid = AuthentificationService().currentUser?.uid;

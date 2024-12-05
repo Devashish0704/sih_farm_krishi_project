@@ -66,6 +66,7 @@ class _BodyState extends State<Body> {
   @override
   void initState() {
     super.initState();
+
     favouriteProductsStream.init();
     allProductsStream.init();
     bestSearchProductsStream.init();
@@ -182,7 +183,7 @@ class _BodyState extends State<Body> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         CategoryProductsScreen(
-                                      productType: productCategories[index]
+                                      category: productCategories[index]
                                           [PRODUCT_TYPE_KEY],
                                     ),
                                   ),
