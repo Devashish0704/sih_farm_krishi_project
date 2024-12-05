@@ -183,10 +183,10 @@ class _BodyState extends State<Body> {
             image: DecorationImage(
               image: AssetImage(bannerFromProductType()),
               fit: BoxFit.fill,
-              colorFilter: ColorFilter.mode(
-                kPrimaryColor,
-                BlendMode.hue,
-              ),
+              // colorFilter: ColorFilter.mode(
+              //   kPrimaryColor,
+              //   BlendMode.color,
+              // ),
             ),
             borderRadius: BorderRadius.circular(30),
           ),
@@ -261,20 +261,25 @@ class _BodyState extends State<Body> {
 
   String bannerFromProductType() {
     switch (widget.category) {
-      // case ProductType.Cereals:
-      //   return "assets/images/arts_banner.jpg";
-      case "animalFeed":
-        return "assets/images/arts_banner.jpg";
-      case "beverages":
-        return "assets/images/arts_banner.jpg";
-      case "dairyProducts":
-        return "assets/images/arts_banner.jpg";
-      // case ProductType.Vegetables:
-      //   return "assets/images/arts_banner.jpg";
-      // case ProductType.Wastes:
-      //   return "assets/images/arts_banner.jpg";
-      // case ProductType.Others:
-      //   return "assets/images/others_banner.jpg";
+      case "Cereals":
+        return "assets/images/cereals_banner2.jpg";
+
+      case "Fish":
+        return "assets/images/fish_banner.webp";
+      case "Chicken":
+        return "assets/images/chicken_banner2.jpg";
+      case "Vegetables":
+        return "assets/images/vegitable_banner.webp";
+      case "Fruits":
+        return "assets/images/fruits_banner.webp";
+      case "Pulses":
+        return "assets/images/pulses_banner.webp";
+      case "Honey":
+        return "assets/images/honey_banner.jpg";
+      case "Milk":
+        return "assets/images/milk_banner.jpg";
+      case "Cheese":
+        return "assets/images/cheese_banner.jpg";
       default:
         return "assets/images/others_banner.jpg";
     }
