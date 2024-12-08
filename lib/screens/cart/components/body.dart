@@ -17,6 +17,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:logger/logger.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../../../utils.dart';
 
@@ -28,10 +29,15 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   final CartItemsStream cartItemsStream = CartItemsStream();
   PersistentBottomSheetController? bottomSheetHandler;
+  Razorpay _razorpay = Razorpay();
+  // BuildContext? razorpayContext;
   @override
   void initState() {
     super.initState();
     cartItemsStream.init();
+    //    _paymentService = PaymentService();
+    // _paymentService.initializeRazorpay(context);
+    initializeRazorpay(context);
   }
 
   @override
@@ -352,80 +358,196 @@ class _BodyState extends State<Body> {
     );
   }
 
+  void initializeRazorpay(BuildContext context) {
+    //  this.razorpayContext = context;
+    _razorpay = Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
+
   Future<void> checkoutButtonCallback() async {
     shutBottomSheet();
+
     final confirmation = await showConfirmationDialog(
       context,
-      "This is just a Project Testing App so, no actual Payment Interface is available.\nDo you want to proceed for Mock Ordering of Products?",
+      "Do you want to proceed with the order?",
     );
-    if (confirmation == false) {
-      return;
-    }
-    final orderFuture = UserDatabaseHelper().emptyCart();
-    orderFuture.then((orderedProductsUid) async {
-      if (orderedProductsUid != null) {
-        print(orderedProductsUid);
-        final dateTime = DateTime.now();
-        final formatedDateTime =
-            "${dateTime.day}-${dateTime.month}-${dateTime.year}";
-        List<OrderedProduct> orderedProducts = orderedProductsUid
-            .map((e) =>
-                OrderedProduct("", productUid: e, orderDate: formatedDateTime))
-            .toList();
-        bool addedProductsToMyProducts = false;
-        String snackbarmMessage = "";
-        try {
-          addedProductsToMyProducts =
-              await UserDatabaseHelper().addToMyOrders(orderedProducts);
-          if (addedProductsToMyProducts) {
-            snackbarmMessage = "Products ordered Successfully";
-          } else {
-            throw "Could not order products due to unknown issue";
-          }
-        } on FirebaseException catch (e) {
-          Logger().e(e.toString());
-          snackbarmMessage = e.toString();
-        } catch (e) {
-          Logger().e(e.toString());
-          snackbarmMessage = e.toString();
-        } finally {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(snackbarmMessage ?? "Something went wrong"),
-            ),
-          );
+
+    if (confirmation == false) return;
+
+    try {
+      // Calculate total order amount
+      final cartTotal = await UserDatabaseHelper().cartTotal;
+      //   orderFuture.then((orderedProductsUid) async {
+      // if (orderedProductsUid != null) {
+      //   num totalAmount = 0;
+      // for (var item in orderedProductsUid) {
+      //   totalAmount += item['total'];
+      // }
+
+      // Convert to paisa (Razorpay accepts amount in paisa)
+      int amountInPaisa = (cartTotal * 100).toInt();
+
+      // Prepare Razorpay options
+      var options = {
+        //rzp_test_FOtq2H6xPAGziJ
+
+        'key': 'rzp_test_FOtq2H6xPAGziJ', // Replace with your Razorpay Key ID
+        'amount': amountInPaisa, // amount in paisa
+        'name': 'Farm Krishi App',
+        'description': 'Order Payment',
+        'prefill': {
+          'contact': '9667027786', // Optional
+          'email': 'imranchopdar13@gmail.com' // Optional
         }
-      } else {
-        throw "Something went wrong while clearing cart";
-      }
-      await showDialog(
-        context: context,
-        builder: (context) {
-          return AsyncProgressDialog(
-            orderFuture,
-            message: Text("Placing the Order"),
-          );
-        },
+      };
+
+      _razorpay.open(options);
+      // }
+      //  }
+      // );
+    } catch (e) {
+      print('Error during checkout: $e');
+      ScaffoldMessenger.of(context!).showSnackBar(
+        SnackBar(content: Text('Payment process failed: $e')),
       );
-    }).catchError((e) {
-      Logger().e(e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Something went wrong"),
-        ),
-      );
-    });
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AsyncProgressDialog(
-          orderFuture,
-          message: Text("Placing the Order"),
-        );
-      },
-    );
-    await refreshPage();
+    }
   }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    print(response);
+    // Payment successful, proceed with order
+    try {
+      final orderFuture = UserDatabaseHelper().emptyCart();
+      orderFuture.then((orderedProductsUid) async {
+        if (orderedProductsUid != null) {
+          final dateTime = DateTime.now();
+          final formatedDateTime =
+              "${dateTime.day}-${dateTime.month}-${dateTime.year}";
+
+          List<OrderedProduct> orderedProducts = orderedProductsUid.map((e) {
+            return OrderedProduct("",
+                productUid: e["id"],
+                quantity: e["count"],
+                orderStatus: "Started",
+                paymentStatus: "Paid",
+                orderDate: formatedDateTime);
+          }).toList();
+
+          bool addedProductsToMyProducts =
+              await UserDatabaseHelper().addToMyOrders(orderedProducts);
+
+          if (addedProductsToMyProducts) {
+            ScaffoldMessenger.of(context!).showSnackBar(
+              SnackBar(content: Text('Payment Successful! Order Placed')),
+            );
+          }
+        }
+      });
+    } catch (e) {
+      print('Error processing successful payment: $e');
+    }
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    ScaffoldMessenger.of(context!).showSnackBar(
+      SnackBar(content: Text('Payment Failed: ${response.message}')),
+    );
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    ScaffoldMessenger.of(context!).showSnackBar(
+      SnackBar(
+          content: Text('External Wallet Selected: ${response.walletName}')),
+    );
+  }
+
+  // void dispose() {
+  //   _razorpay.clear();
+  // }
+
+  // Future<void> checkoutButtonCallback() async {
+  //   shutBottomSheet();
+  //   final confirmation = await showConfirmationDialog(
+  //     context,
+  //     "Currently we are testing farm krishi app.\nDo you want to proceed for Mock Ordering of Products?",
+  //   );
+  //   if (confirmation == false) {
+  //     return;
+  //   }
+  //   print("Proceeding for Mock Order");
+  //   final orderFuture = UserDatabaseHelper().emptyCart();
+  //   print(orderFuture);
+  //   orderFuture.then((orderedProductsUid) async {
+  //     if (orderedProductsUid != null) {
+  //       print(orderedProductsUid);
+  //       final dateTime = DateTime.now();
+  //       final formatedDateTime =
+  //           "${dateTime.day}-${dateTime.month}-${dateTime.year}";
+  //       List<OrderedProduct> orderedProducts = orderedProductsUid.map((e) {
+  //         // print(e);
+  //         return OrderedProduct("",
+  //             productUid: e["id"],
+  //             quantity: e["count"],
+  //             orderStatus: "Ordered",
+  //             orderDate: formatedDateTime);
+  //       }).toList();
+  //       print(orderedProducts);
+  //       bool addedProductsToMyProducts = false;
+  //       String snackbarmMessage = "";
+  //       try {
+  //         addedProductsToMyProducts =
+  //             await UserDatabaseHelper().addToMyOrders(orderedProducts);
+  //         if (addedProductsToMyProducts) {
+  //           snackbarmMessage = "Products ordered Successfully";
+  //         } else {
+  //           throw "Could not order products due to unknown issue";
+  //         }
+  //       } on FirebaseException catch (e) {
+  //         Logger().e(e.toString());
+  //         snackbarmMessage = e.toString();
+  //       } catch (e) {
+  //         Logger().e(e.toString());
+  //         snackbarmMessage = e.toString();
+  //       } finally {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(
+  //             content: Text(snackbarmMessage ?? "Something went wrong"),
+  //           ),
+  //         );
+  //       }
+  //     } else {
+  //       throw "Something went wrong while clearing cart";
+  //     }
+  //     await showDialog(
+  //       context: context,
+  //       builder: (context) {
+  //         return AsyncProgressDialog(
+  //           orderFuture,
+  //           message: Text("Placing the Order"),
+  //         );
+  //       },
+  //     );
+  //   }).catchError((e) {
+  //     Logger().e(e.toString());
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text("Something went wrong"),
+  //       ),
+  //     );
+  //   });
+  //   await showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AsyncProgressDialog(
+  //         orderFuture,
+  //         message: Text("Placing the Order"),
+  //       );
+  //     },
+  //   );
+  //   await refreshPage();
+  // }
 
   void shutBottomSheet() {
     if (bottomSheetHandler != null) {
