@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_commerce_app_flutter/farmer/models/User.dart';
 import 'package:e_commerce_app_flutter/models/Address.dart';
 import 'package:e_commerce_app_flutter/models/CartItem.dart';
 import 'package:e_commerce_app_flutter/models/OrderedProduct.dart';
@@ -164,7 +165,7 @@ class UserDatabaseHelper {
     return CartItem.fromMap(docSnapshot.data()!, id: docSnapshot.id);
   }
 
-  Future<bool> addProductToCart(String productId) async {
+  Future<bool> addProductToCart(String productId, int quantity) async {
     final uid = AuthentificationService().currentUser!.uid;
     print(uid);
     final cartCollectionRef = firestore
@@ -174,27 +175,76 @@ class UserDatabaseHelper {
     final docRef = cartCollectionRef.doc(productId);
     final docSnapshot = await docRef.get();
     if (!docSnapshot.exists) {
-      await docRef.set(CartItem(itemCount: 1, id: productId).toMap());
+      await docRef.set(CartItem(itemCount: quantity, id: productId).toMap());
     } else {
-      await docRef.update({CartItem.ITEM_COUNT_KEY: FieldValue.increment(1)});
+      await docRef.update({CartItem.ITEM_COUNT_KEY: quantity});
     }
     return true;
   }
+  // Future<bool> addProductToCart(String productId , ) async {
+  //   final uid = AuthentificationService().currentUser!.uid;
+  //   print(uid);
+  //   final cartCollectionRef = firestore
+  //       .collection(USERS_COLLECTION_NAME)
+  //       .doc(uid)
+  //       .collection(CART_COLLECTION_NAME);
+  //   final docRef = cartCollectionRef.doc(productId);
+  //   final docSnapshot = await docRef.get();
+  //   if (!docSnapshot.exists) {
+  //     await docRef.set(CartItem(itemCount: 1, id: productId).toMap());
+  //   } else {
+  //     await docRef.update({CartItem.ITEM_COUNT_KEY: FieldValue.increment(1)});
+  //   }
+  //   return true;
+  // }
 
-  Future<List<String>> emptyCart() async {
+  Future<List<Map>> emptyCart() async {
     final uid = AuthentificationService().currentUser!.uid;
     final cartItems = await firestore
         .collection(USERS_COLLECTION_NAME)
         .doc(uid)
         .collection(CART_COLLECTION_NAME)
         .get();
-    final orderedProductsUid = <String>[];
+
+    final orderedProducts = <Map>[];
+    num total = 0.0;
+
     for (final doc in cartItems.docs) {
-      orderedProductsUid.add(doc.id);
+      num ptotal = 0.0;
+      print(doc.data());
+      print("doc " + doc.id);
+      final itemsCount = doc.data()[CartItem.ITEM_COUNT_KEY] as num;
+      final product = await ProductDatabaseHelper().getProductWithID(doc.id);
+      ptotal += (itemsCount * product!.price!);
+      total += ptotal;
+      orderedProducts.add({
+        "id": doc.id,
+        "count": doc.data()[CartItem.ITEM_COUNT_KEY],
+        "total": ptotal,
+      });
       await doc.reference.delete();
     }
-    return orderedProductsUid;
+    return orderedProducts;
   }
+  // Future<List<String>> emptyCart() async {
+  //   final uid = AuthentificationService().currentUser!.uid;
+  //   final cartItems = await firestore
+  //       .collection(USERS_COLLECTION_NAME)
+  //       .doc(uid)
+  //       .collection(CART_COLLECTION_NAME)
+  //       .get();
+
+  //   final orderedProductsUid = <String>[];
+  //   print(cartItems.docs);
+  //   print(cartItems.docs);
+  //   for (final doc in cartItems.docs) {
+  //     print(doc.data());
+  //     print("doc " + doc.id);
+  //     orderedProductsUid.add(doc.id);
+  //     await doc.reference.delete();
+  //   }
+  //   return orderedProductsUid;
+  // }
 
   Future<num> get cartTotal async {
     final uid = AuthentificationService().currentUser!.uid;
@@ -393,5 +443,19 @@ class UserDatabaseHelper {
     final userDocSnapshot =
         await firestore.collection(USERS_COLLECTION_NAME).doc(uid).get();
     return userDocSnapshot.data()?[DP_KEY] as String?;
+  }
+
+  Future<User?> getUserDetailsById(String userId) async {
+    try {
+      final userDoc =
+          await firestore.collection(USERS_COLLECTION_NAME).doc(userId).get();
+      if (userDoc.exists) {
+        return User.fromMap(userDoc.data()!, userDoc.id);
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching user details: $e');
+      return null;
+    }
   }
 }

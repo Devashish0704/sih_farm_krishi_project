@@ -34,6 +34,18 @@ class SellerDatabaseHelper {
         .toList();
   }
 
+  Future<void> updateOrderStatus(
+      String orderedProductId, String orderStatus) async {
+    await _firebaseFirestore
+        .collection('ordered_products')
+        .doc(orderedProductId)
+        .update({
+          OrderedProduct.ORDER_STATUS_KEY: orderStatus,
+        })
+        .then((value) => print("Order status updated"))
+        .catchError((error) => print("Failed to update order status: $error"));
+  }
+
   // Get total revenue for seller's products
   Future<num> getSellerTotalRevenue() async {
     final uid = AuthentificationService().currentUser!.uid;
