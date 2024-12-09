@@ -10,6 +10,7 @@ import 'package:e_commerce_app_flutter/screens/edit_product/edit_product_screen.
 import 'package:e_commerce_app_flutter/screens/manage_addresses/manage_addresses_screen.dart';
 import 'package:e_commerce_app_flutter/screens/my_orders/my_orders_screen.dart';
 import 'package:e_commerce_app_flutter/screens/my_products/my_products_screen.dart';
+import 'package:e_commerce_app_flutter/screens/temp_blinkit/home_screen.dart';
 import 'package:e_commerce_app_flutter/services/authentification/authentification_service.dart';
 import 'package:e_commerce_app_flutter/services/database/user_database_helper.dart';
 import 'package:e_commerce_app_flutter/utils.dart';
@@ -279,6 +280,22 @@ class HomeScreenDrawer extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => ChangePasswordScreen(),
+                ));
+          },
+        ),
+        ListTile(
+          title: Text(
+            "Blink it",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 15,
+            ),
+          ),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(),
                 ));
           },
         ),
