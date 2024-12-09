@@ -21,6 +21,8 @@ class ProductDatabaseHelper {
 
   FirebaseFirestore get firestore => _firebaseFirestore;
 
+  Position? userLocation; // Variable to store user location
+
   Future<List<String>> searchInProducts(String query,
       {String? category}) async {
     Query<Map<String, dynamic>> queryRef;
@@ -319,14 +321,34 @@ class ProductDatabaseHelper {
     return products;
   }
 
-  Future<List<Product>> getNearbyProducts() async {
+  Future<List<Product>> getProductsByCategoryAndRating(String category) async {
+    final productsSnapshot = await firestore
+        .collection(PRODUCTS_COLLECTION_NAME)
+        .where('category', isEqualTo: category) // Filter by category
+        .get();
+    List<Product> products = [];
+
+    for (final doc in productsSnapshot.docs) {
+      final product = Product.fromMap(doc.data(), id: doc.id);
+      products.add(product);
+    }
+
+    // Sort the products by their pointRating in descending order
+    products.sort((a, b) => (b.pointRating ?? 0).compareTo(a.pointRating ?? 0));
+
+    return products;
+  }
+
+  Future<List<Product>> getNearbyProducts(String category) async {
     // Fetch the current user's location dynamically
-    Position userLocation = await _determinePosition();
+    Position userLocation = await determinePosition();
 
     print(userLocation);
 
-    final productsSnapshot =
-        await firestore.collection(PRODUCTS_COLLECTION_NAME).get();
+    final productsSnapshot = await firestore
+        .collection(PRODUCTS_COLLECTION_NAME)
+        .where('category', isEqualTo: category) // Filter by category
+        .get();
     List<Product> products = [];
 
     for (final doc in productsSnapshot.docs) {
@@ -355,30 +377,39 @@ class ProductDatabaseHelper {
   }
 
   // Method to determine the current position of the user
-  Future<Position> _determinePosition() async {
+  Future<Position> determinePosition() async {
+    if (userLocation != null) {
+      return userLocation!; // Return stored location if available
+    }
+
+    print(1);
+
     bool serviceEnabled;
     LocationPermission permission;
+    print(2);
 
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      // Location services are not enabled, return a default position or handle accordingly
       throw Exception('Location services are disabled.');
     }
+    print(3);
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission != LocationPermission.whileInUse &&
           permission != LocationPermission.always) {
-        // Permissions are denied, handle accordingly
         throw Exception('Location permissions are denied');
       }
     }
 
+    print(4);
     // When we reach here, permissions are granted, and we can get the location
-    return await Geolocator.getCurrentPosition(
+    userLocation = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
+    print(5);
+    return userLocation!;
   }
 
   Future<bool> updateProductsImages(
@@ -418,5 +449,39 @@ class ProductDatabaseHelper {
         .doc('currentUserId')
         .get();
     return User.fromFirestore(userDoc);
+  }
+
+  Future<Position> getProductLocation(String productId) async {
+    final doc = await firestore
+        .collection(PRODUCTS_COLLECTION_NAME)
+        .doc(productId)
+        .get();
+    final data = doc.data();
+    if (data != null && data['position'] != null) {
+      // Assuming position is stored as GeoPoint
+      GeoPoint geoPoint = data['position'];
+      print("");
+      return Position(
+          latitude: geoPoint.latitude,
+          longitude: geoPoint.longitude,
+          timestamp: DateTime.now(),
+          accuracy: 0.0,
+          altitude: 0.0,
+          altitudeAccuracy: 0.0,
+          heading: 0.0,
+          headingAccuracy: 0.0,
+          speed: 0.0,
+          speedAccuracy: 0.0);
+    }
+    throw Exception('Product location not found');
+  }
+
+  double calculateDistance(Position userLocation, Position productLocation) {
+    return Geolocator.distanceBetween(
+      userLocation.latitude,
+      userLocation.longitude,
+      productLocation.latitude,
+      productLocation.longitude,
+    );
   }
 }

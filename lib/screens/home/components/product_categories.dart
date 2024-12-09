@@ -14,13 +14,11 @@ final List<Map<String, dynamic>> productCategories = [
   <String, dynamic>{
     ICON_KEY: "assets/icons/fruits.svg",
     TITLE_KEY: "Fruits",
-    // PRODUCT_TYPE_KEY: "Fruits",
     PRODUCT_TYPE_KEY: "Fruits",
   },
   <String, dynamic>{
     ICON_KEY: "assets/icons/carrot.svg",
     TITLE_KEY: "Vegetables",
-    //  PRODUCT_TYPE_KEY: ProductType.freshProduce,
     PRODUCT_TYPE_KEY: "Vegetables",
   },
   <String, dynamic>{
@@ -31,31 +29,31 @@ final List<Map<String, dynamic>> productCategories = [
   <String, dynamic>{
     ICON_KEY: "assets/icons/milk.svg",
     TITLE_KEY: "Milk",
-    PRODUCT_TYPE_KEY: ProductType.dairyProducts,
+    PRODUCT_TYPE_KEY: "Milk",
   },
   <String, dynamic>{
     ICON_KEY: "assets/icons/chease.svg",
     TITLE_KEY: "Cheese",
-    PRODUCT_TYPE_KEY: ProductType.spicesAndHerbs,
+    PRODUCT_TYPE_KEY: "Cheese",
   },
   <String, dynamic>{
     ICON_KEY: "assets/icons/chicken.svg",
     TITLE_KEY: "Chicken",
-    PRODUCT_TYPE_KEY: ProductType.animalFeed,
+    PRODUCT_TYPE_KEY: "Chicken",
   },
   <String, dynamic>{
     ICON_KEY: "assets/icons/fish.svg",
     TITLE_KEY: "Fish",
-    PRODUCT_TYPE_KEY: ProductType.animalFeed,
+    PRODUCT_TYPE_KEY: "Fish",
   },
   <String, dynamic>{
     ICON_KEY: "assets/icons/honey.svg",
     TITLE_KEY: "Honey",
-    PRODUCT_TYPE_KEY: ProductType.organicProducts,
+    PRODUCT_TYPE_KEY: "Honey",
   },
   <String, dynamic>{
     ICON_KEY: "assets/icons/Others.svg",
     TITLE_KEY: "Others",
-    PRODUCT_TYPE_KEY: ProductType.miscellaneous,
+    PRODUCT_TYPE_KEY: "Others",
   },
 ];

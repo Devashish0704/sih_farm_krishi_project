@@ -7,42 +7,59 @@ import 'package:e_commerce_app_flutter/models/Product.dart';
 import 'package:e_commerce_app_flutter/screens/product_details/product_details_screen.dart';
 import 'package:e_commerce_app_flutter/screens/search_result/search_result_screen.dart';
 import 'package:e_commerce_app_flutter/services/data_streams/category_products_stream.dart';
+import 'package:e_commerce_app_flutter/services/data_streams/toggle_datastreams.dart';
 import 'package:e_commerce_app_flutter/services/database/product_database_helper.dart';
 import 'package:e_commerce_app_flutter/size_config.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class Body extends StatefulWidget {
   final String category;
-  // final ProductType productType;
 
-  Body({
-    required this.category,
-    // required this.productType,
-  });
+  Body({required this.category});
 
   @override
-  _BodyState createState() =>
-      _BodyState(categoryProductsStream: CategoryProductsStream(category));
+  _BodyState createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> {
-  final CategoryProductsStream categoryProductsStream;
+  late BestSearchProductsStream bestSearchProductsStream;
+  late NearbyProductsStream nearbyProductsStream;
 
-  _BodyState({required this.categoryProductsStream});
+  bool isBestSearch = false;
 
+  
   @override
   void initState() {
     super.initState();
-    categoryProductsStream.init();
+
+    bestSearchProductsStream =
+        BestSearchProductsStream(category: widget.category);
+    nearbyProductsStream = NearbyProductsStream(category: widget.category);
+
+    // Initialize both streams to avoid late initialization issues
+    bestSearchProductsStream.init();
+    nearbyProductsStream.init();
   }
 
   @override
   void dispose() {
+    bestSearchProductsStream.dispose();
+    nearbyProductsStream.dispose();
     super.dispose();
-    categoryProductsStream.dispose();
+  }
+
+  Future<void> refreshPage() {
+    if (isBestSearch) {
+      bestSearchProductsStream.reload();
+    } else {
+      nearbyProductsStream.reload();
+    }
+    return Future<void>.value();
   }
 
   @override
@@ -66,14 +83,24 @@ class _BodyState extends State<Body> {
                     height: SizeConfig.screenHeight * 0.13,
                     child: buildCategoryBanner(),
                   ),
+                  SizedBox(
+                    height: SizeConfig.screenHeight * 0.01,
+                  ),
+                  SizedBox(
+                    height: SizeConfig.screenHeight * 0.05,
+                    child: buildToggleSwitch(),
+                  ),
                   SizedBox(height: getProportionateScreenHeight(20)),
                   SizedBox(
                     height: SizeConfig.screenHeight * 0.68,
                     child: StreamBuilder<List<String>>(
-                      stream: categoryProductsStream.stream,
+                      stream: isBestSearch
+                          ? bestSearchProductsStream.stream
+                          : nearbyProductsStream.stream,
                       builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          List<String> productsId = snapshot.data!;
+                        if (snapshot.hasData && snapshot.data != null) {
+                          List<String>? productsId = snapshot.data!;
+                          print("productsId $productsId");
                           if (productsId.length == 0) {
                             return Center(
                               child: NothingToShowContainer(
@@ -138,22 +165,18 @@ class _BodyState extends State<Body> {
                   category: widget.category,
                   //   productType: widget.productType,
                 );
-                if (searchedProductsId != null) {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SearchResultScreen(
-                        searchQuery: query,
-                        searchResultProductsId: searchedProductsId,
-                        searchIn: widget.category,
-                        // EnumToString.convertToString(widget.productType),
-                      ),
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SearchResultScreen(
+                      searchQuery: query,
+                      searchResultProductsId: searchedProductsId,
+                      searchIn: widget.category,
+                      // EnumToString.convertToString(widget.productType),
                     ),
-                  );
-                  await refreshPage();
-                } else {
-                  throw "Couldn't perform search due to some unknown reason";
-                }
+                  ),
+                );
+                await refreshPage();
               } catch (e) {
                 final error = e.toString();
                 Logger().e(error);
@@ -170,11 +193,6 @@ class _BodyState extends State<Body> {
     );
   }
 
-  Future<void> refreshPage() {
-    categoryProductsStream.reload();
-    return Future<void>.value();
-  }
-
   Widget buildCategoryBanner() {
     return Stack(
       children: [
@@ -183,10 +201,6 @@ class _BodyState extends State<Body> {
             image: DecorationImage(
               image: AssetImage(bannerFromProductType()),
               fit: BoxFit.fill,
-              colorFilter: ColorFilter.mode(
-                kPrimaryColor,
-                BlendMode.hue,
-              ),
             ),
             borderRadius: BorderRadius.circular(30),
           ),
@@ -207,6 +221,31 @@ class _BodyState extends State<Body> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget buildToggleSwitch() {
+    return ToggleSwitch(
+      initialLabelIndex: isBestSearch ? 1 : 0,
+      totalSwitches: 2,
+      labels: ['Nearby Products', 'Best Search '],
+      activeBgColor: [Colors.green],
+      inactiveBgColor: Colors.grey,
+      activeFgColor: Colors.white,
+      inactiveFgColor: Colors.black,
+      minWidth: 180,
+      // minHeight: 0,
+      onToggle: (index) {
+        print('switched to: $index');
+        setState(() {
+          isBestSearch = (index == 1);
+          if (isBestSearch) {
+            bestSearchProductsStream.reload();
+          } else {
+            nearbyProductsStream.reload();
+          }
+        });
+      },
     );
   }
 
@@ -261,20 +300,25 @@ class _BodyState extends State<Body> {
 
   String bannerFromProductType() {
     switch (widget.category) {
-      // case ProductType.Cereals:
-      //   return "assets/images/arts_banner.jpg";
-      case "animalFeed":
-        return "assets/images/arts_banner.jpg";
-      case "beverages":
-        return "assets/images/arts_banner.jpg";
-      case "dairyProducts":
-        return "assets/images/arts_banner.jpg";
-      // case ProductType.Vegetables:
-      //   return "assets/images/arts_banner.jpg";
-      // case ProductType.Wastes:
-      //   return "assets/images/arts_banner.jpg";
-      // case ProductType.Others:
-      //   return "assets/images/others_banner.jpg";
+      case "Cereals":
+        return "assets/images/cereals_banner2.jpg";
+
+      case "Fish":
+        return "assets/images/fish_banner.webp";
+      case "Chicken":
+        return "assets/images/chicken_banner2.jpg";
+      case "Vegetables":
+        return "assets/images/vegitable_banner.webp";
+      case "Fruits":
+        return "assets/images/fruits_banner.webp";
+      case "Pulses":
+        return "assets/images/pulses_banner.webp";
+      case "Honey":
+        return "assets/images/honey_banner.jpg";
+      case "Milk":
+        return "assets/images/milk_banner.jpg";
+      case "Cheese":
+        return "assets/images/cheese_banner.jpg";
       default:
         return "assets/images/others_banner.jpg";
     }
