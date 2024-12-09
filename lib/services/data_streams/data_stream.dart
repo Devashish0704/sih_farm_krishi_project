@@ -19,6 +19,8 @@ abstract class DataStream<T> {
     }
   }
 
+  
+
   void addError(dynamic e) {
     // Ensure the stream is not closed before adding an error
     if (!streamController.isClosed) {

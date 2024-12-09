@@ -11,6 +11,7 @@ import 'package:e_commerce_app_flutter/services/authentification/authentificatio
 import 'package:e_commerce_app_flutter/services/data_streams/all_products_stream.dart';
 import 'package:e_commerce_app_flutter/services/data_streams/data_stream.dart';
 import 'package:e_commerce_app_flutter/services/data_streams/favourite_products_stream.dart';
+import 'package:e_commerce_app_flutter/services/data_streams/toggle_datastreams.dart';
 import 'package:e_commerce_app_flutter/services/database/product_database_helper.dart';
 import 'package:e_commerce_app_flutter/size_config.dart';
 import 'package:flutter/material.dart';
@@ -22,31 +23,6 @@ import 'products_section.dart';
 import 'product_categories.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
-class BestSearchProductsStream extends DataStream<List<String>> {
-  @override
-  void reload() async {
-    try {
-      final bestSearchProducts =
-          await ProductDatabaseHelper().getBestSearchProducts();
-      addData(bestSearchProducts.map((product) => product.id).toList());
-    } catch (e) {
-      addError(e);
-    }
-  }
-}
-
-class NearbyProductsStream extends DataStream<List<String>> {
-  @override
-  void reload() async {
-    try {
-      final nearbyProducts = await ProductDatabaseHelper().getNearbyProducts();
-      addData(nearbyProducts.map((product) => product.id).toList());
-    } catch (e) {
-      addError(e);
-    }
-  }
-}
-
 class Body extends StatefulWidget {
   @override
   _BodyState createState() => _BodyState();
@@ -57,9 +33,9 @@ class _BodyState extends State<Body> {
       FavouriteProductsStream();
   final AllProductsStream allProductsStream = AllProductsStream();
 
-  final BestSearchProductsStream bestSearchProductsStream =
-      BestSearchProductsStream();
-  final NearbyProductsStream nearbyProductsStream = NearbyProductsStream();
+  // final BestSearchProductsStream bestSearchProductsStream =
+  //     BestSearchProductsStream();
+  // final NearbyProductsStream nearbyProductsStream = NearbyProductsStream();
 
   bool isBestSearch = false; // Toggle state
 
@@ -69,16 +45,18 @@ class _BodyState extends State<Body> {
 
     favouriteProductsStream.init();
     allProductsStream.init();
-    bestSearchProductsStream.init();
-    nearbyProductsStream.init();
+    // bestSearchProductsStream.init();
+    // nearbyProductsStream.init();
+
+    ProductDatabaseHelper().determinePosition();
   }
 
   @override
   void dispose() {
     favouriteProductsStream.dispose();
     allProductsStream.dispose();
-    bestSearchProductsStream.dispose();
-    nearbyProductsStream.dispose();
+    // bestSearchProductsStream.dispose();
+    // nearbyProductsStream.dispose();
     super.dispose();
   }
 
@@ -199,45 +177,45 @@ class _BodyState extends State<Body> {
                 SizedBox(height: getProportionateScreenHeight(20)),
 
                 // Here, default theme colors are used for activeBgColor, activeFgColor, inactiveBgColor and inactiveFgColor
-                ToggleSwitch(
-                  initialLabelIndex: isBestSearch ? 1 : 0,
-                  totalSwitches: 2,
-                  labels: ['Nearby Products', 'Best Search '],
-                  activeBgColor: [Colors.green],
-                  inactiveBgColor: Colors.grey,
-                  activeFgColor: Colors.white,
-                  inactiveFgColor: Colors.black,
-                  minWidth: 180,
-                  onToggle: (index) {
-                    print('switched to: $index');
-                    setState(() {
-                      isBestSearch = (index == 1);
-                      if (isBestSearch) {
-                        bestSearchProductsStream.reload();
-                      } else {
-                        nearbyProductsStream.reload();
-                      }
-                    });
-                  },
-                ),
+                // ToggleSwitch(
+                //   initialLabelIndex: isBestSearch ? 1 : 0,
+                //   totalSwitches: 2,
+                //   labels: ['Nearby Products', 'Best Search '],
+                //   activeBgColor: [Colors.green],
+                //   inactiveBgColor: Colors.grey,
+                //   activeFgColor: Colors.white,
+                //   inactiveFgColor: Colors.black,
+                //   minWidth: 180,
+                //   onToggle: (index) {
+                //     print('switched to: $index');
+                //     setState(() {
+                //       isBestSearch = (index == 1);
+                //       if (isBestSearch) {
+                //         bestSearchProductsStream.reload();
+                //       } else {
+                //         nearbyProductsStream.reload();
+                //       }
+                //     });
+                //   },
+                // ),
 
                 SizedBox(height: getProportionateScreenHeight(20)),
 
-                SizedBox(
-                  height: SizeConfig.screenHeight * 0.8,
-                  child: ProductsSection(
-                    sectionTitle: isBestSearch
-                        ? "Best Rated Products"
-                        : "Nearby Products",
-                    productsStreamController: isBestSearch
-                        ? bestSearchProductsStream
-                        : nearbyProductsStream,
-                    emptyListMessage: isBestSearch
-                        ? "No highly rated products available"
-                        : "No nearby products available",
-                    onProductCardTapped: onProductCardTapped,
-                  ),
-                ),
+                // SizedBox(
+                //   height: SizeConfig.screenHeight * 0.8,
+                //   child: ProductsSection(
+                //     sectionTitle: isBestSearch
+                //         ? "Best Rated Products"
+                //         : "Nearby Products",
+                //     productsStreamController: isBestSearch
+                //         ? bestSearchProductsStream
+                //         : nearbyProductsStream,
+                //     emptyListMessage: isBestSearch
+                //         ? "No highly rated products available"
+                //         : "No nearby products available",
+                //     onProductCardTapped: onProductCardTapped,
+                //   ),
+                // ),
 
                 SizedBox(height: getProportionateScreenHeight(80)),
               ],

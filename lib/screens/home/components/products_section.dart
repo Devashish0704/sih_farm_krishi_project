@@ -22,8 +22,6 @@ class ProductsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: 14,
@@ -87,8 +85,8 @@ class ProductsSection extends StatelessWidget {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 0.7,
-        crossAxisSpacing: 4,
-        mainAxisSpacing: 4,
+        crossAxisSpacing: 6,
+        mainAxisSpacing: 8,
       ),
       itemCount: productsId.length,
       itemBuilder: (context, index) {
