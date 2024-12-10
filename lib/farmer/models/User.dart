@@ -63,4 +63,31 @@ class User {
       fieldId: data['fieldId'] ?? '',
     );
   }
+
+  factory User.fromMap(Map<String, dynamic> data, String id) {
+    GeoPoint loc = data["location"] != null ? data["location"] : GeoPoint(0, 0);
+
+    return User(
+      userId: id,
+      name: data['name'] ?? '',
+      age: data['age'] ?? 0,
+      phone: data['phone'] ?? '',
+      city: data['city'] ?? '',
+      aadharNo: data['aadharNumber'] ?? '',
+      imageUrl: data['imageUrl'] ?? STOCK_IMAGE_URL,
+      location: Position(
+        latitude: loc.latitude,
+        longitude: loc.longitude,
+        timestamp: DateTime.now(),
+        accuracy: 0.0,
+        altitude: 0.0,
+        heading: 0.0,
+        speed: 0.0,
+        speedAccuracy: 0.0,
+        altitudeAccuracy: 0.0,
+        headingAccuracy: 0.0,
+      ),
+      fieldId: data['fieldId'] ?? '',
+    );
+  }
 }

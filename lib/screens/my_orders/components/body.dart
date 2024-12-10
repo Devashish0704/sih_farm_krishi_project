@@ -133,6 +133,7 @@ class _BodyState extends State<Body> {
 
   Widget _buildOrderedProductItem(
       OrderedProduct orderedProduct, String OrderedProductIds) {
+    print(orderedProduct);
     return FutureBuilder<Product>(
       future:
           ProductDatabaseHelper().getProductWithID(orderedProduct.productUid),
@@ -159,6 +160,7 @@ class _BodyState extends State<Body> {
           padding: EdgeInsets.symmetric(vertical: 6),
           child: Column(
             children: [
+              // Original Order Date Container
               Container(
                 padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 width: double.infinity,
@@ -182,6 +184,46 @@ class _BodyState extends State<Body> {
                   ),
                 ),
               ),
+
+              // Order Status Stepper
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                color: Colors.grey[100],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Order Status',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      children: [
+                        _buildStatusStep(orderedProduct, 'Ordered',
+                            orderedProduct.orderStatus == 'Ordered'),
+                        _buildStatusDivider(),
+                        _buildStatusStep(orderedProduct, 'Processing',
+                            orderedProduct.orderStatus == 'Processing'),
+                        _buildStatusDivider(),
+                        _buildStatusStep(orderedProduct, 'Shipped',
+                            orderedProduct.orderStatus == 'Shipped'),
+                        // _buildStatusDivider(),
+                        // _buildStatusStep(orderedProduct, 'Delivered',
+                        //     orderedProduct.orderStatus == 'Delivered'),
+                        _buildStatusDivider(),
+                        _buildStatusStep(orderedProduct, 'Completed',
+                            orderedProduct.orderStatus == 'Completed'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Existing Product Detail Container
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                 decoration: BoxDecoration(
@@ -207,6 +249,8 @@ class _BodyState extends State<Body> {
                   },
                 ),
               ),
+
+              // Existing Review Button Container
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -283,4 +327,202 @@ class _BodyState extends State<Body> {
       },
     );
   }
+
+  Widget _buildStatusStep(
+      OrderedProduct orderedProduct, String status, bool isActive) {
+    final completedStatuses = orderedProduct.getCompletedStatuses();
+
+    return Expanded(
+      child: Column(
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: completedStatuses.contains(status)
+                  ? kPrimaryColor
+                  : Colors.grey[300],
+            ),
+            child: completedStatuses.contains(status)
+                ? Icon(Icons.check, color: Colors.white, size: 16)
+                : null,
+          ),
+          SizedBox(height: 4),
+          Text(
+            status,
+            style: TextStyle(
+              fontSize: 10,
+              color: completedStatuses.contains(status)
+                  ? kPrimaryColor
+                  : Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Helper method to build dividers between steps
+  Widget _buildStatusDivider() {
+    return Expanded(
+      child: Divider(
+        color: Colors.grey[300],
+        thickness: 1,
+      ),
+    );
+  }
+
+  // Widget _buildOrderedProductItem(
+  //     OrderedProduct orderedProduct, String OrderedProductIds) {
+  //   return FutureBuilder<Product>(
+  //     future:
+  //         ProductDatabaseHelper().getProductWithID(orderedProduct.productUid),
+  //     builder: (context, snapshot) {
+  //       if (snapshot.connectionState == ConnectionState.waiting) {
+  //         return Center(child: CircularProgressIndicator());
+  //       } else if (snapshot.hasError) {
+  //         Logger().e('Error fetching product: ${snapshot.error}');
+  //         return Icon(
+  //           Icons.error,
+  //           size: 60,
+  //           color: kTextColor,
+  //         );
+  //       } else if (!snapshot.hasData) {
+  //         return Icon(
+  //           Icons.error,
+  //           size: 60,
+  //           color: kTextColor,
+  //         );
+  //       }
+
+  //       final product = snapshot.data!;
+  //       return Padding(
+  //         padding: EdgeInsets.symmetric(vertical: 6),
+  //         child: Column(
+  //           children: [
+  //             Container(
+  //               padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+  //               width: double.infinity,
+  //               decoration: BoxDecoration(
+  //                 color: kTextColor.withOpacity(0.12),
+  //                 borderRadius: BorderRadius.only(
+  //                   topLeft: Radius.circular(16),
+  //                   topRight: Radius.circular(16),
+  //                 ),
+  //               ),
+  //               child: Text.rich(
+  //                 TextSpan(
+  //                   text: "Ordered on:  ",
+  //                   style: TextStyle(color: Colors.black, fontSize: 12),
+  //                   children: [
+  //                     TextSpan(
+  //                       text: orderedProduct.orderDate,
+  //                       style: TextStyle(fontWeight: FontWeight.bold),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //             Container(
+  //               padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+  //               decoration: BoxDecoration(
+  //                 border: Border.symmetric(
+  //                   vertical: BorderSide(
+  //                     color: kTextColor.withOpacity(0.15),
+  //                   ),
+  //                 ),
+  //               ),
+  //               child: ProductShortDetailCard(
+  //                 productId: product.id,
+  //                 onPressed: () {
+  //                   Navigator.push(
+  //                     context,
+  //                     MaterialPageRoute(
+  //                       builder: (context) => ProductDetailsScreen(
+  //                         productId: product.id,
+  //                       ),
+  //                     ),
+  //                   ).then((_) async {
+  //                     await _refreshPage();
+  //                   });
+  //                 },
+  //               ),
+  //             ),
+  //             Container(
+  //               width: double.infinity,
+  //               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+  //               decoration: BoxDecoration(
+  //                 color: kPrimaryColor,
+  //                 borderRadius: BorderRadius.only(
+  //                   bottomLeft: Radius.circular(16),
+  //                   bottomRight: Radius.circular(16),
+  //                 ),
+  //               ),
+  //               child: TextButton(
+  //                 onPressed: () async {
+  //                   final currentUserUid =
+  //                       AuthentificationService().currentUser!.uid;
+  //                   Review? prevReview;
+  //                   try {
+  //                     prevReview = await ProductDatabaseHelper()
+  //                         .getProductReviewWithID(
+  //                             orderedProduct.id, currentUserUid);
+  //                   } on FirebaseException catch (e) {
+  //                     Logger().w("Firebase Exception: $e");
+  //                   } catch (e) {
+  //                     Logger().w("Unknown Exception: $e");
+  //                   } finally {
+  //                     prevReview ??=
+  //                         Review(currentUserUid, reviewerUid: currentUserUid);
+  //                   }
+
+  //                   final result = await showDialog(
+  //                     context: context,
+  //                     builder: (context) => ProductReviewDialog(
+  //                       review: prevReview!,
+  //                       ProductId: OrderedProductIds,
+  //                     ),
+  //                   );
+
+  //                   if (result is Review) {
+  //                     String snackbarMessage = "a";
+  //                     bool reviewAdded = false;
+  //                     try {
+  //                       reviewAdded = await ProductDatabaseHelper()
+  //                           .addProductReview(product.id, result);
+  //                       snackbarMessage = reviewAdded
+  //                           ? "Product review added successfully"
+  //                           : "Couldn't add product review due to unknown reason";
+  //                     } on FirebaseException catch (e) {
+  //                       Logger().w("Firebase Exception: $e");
+  //                       snackbarMessage = e.toString();
+  //                     } catch (e) {
+  //                       Logger().w("Unknown Exception: $e");
+  //                       snackbarMessage = e.toString();
+  //                     } finally {
+  //                       Logger().i(snackbarMessage);
+  //                       ScaffoldMessenger.of(context).showSnackBar(
+  //                         SnackBar(content: Text(snackbarMessage)),
+  //                       );
+  //                     }
+  //                     await _refreshPage();
+  //                   }
+  //                 },
+  //                 child: Text(
+  //                   "Give Product Review",
+  //                   style: TextStyle(
+  //                     color: Colors.white,
+  //                     fontWeight: FontWeight.w600,
+  //                     fontSize: 16,
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 }
