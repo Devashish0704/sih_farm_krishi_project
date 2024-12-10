@@ -2,6 +2,9 @@ import 'package:e_commerce_app_flutter/components/async_progress_dialog.dart';
 import 'package:e_commerce_app_flutter/constants.dart';
 import 'package:e_commerce_app_flutter/farmer/screens/InitScreen.dart';
 import 'package:e_commerce_app_flutter/screens/about_developer/about_developer_screen.dart';
+import 'package:e_commerce_app_flutter/screens/ai_hada_model/crop_name_to_grow.dart';
+import 'package:e_commerce_app_flutter/screens/ai_hada_model/crop_production_screen.dart';
+import 'package:e_commerce_app_flutter/screens/ai_hada_model/n_p_k_value.dart';
 import 'package:e_commerce_app_flutter/screens/change_display_picture/change_display_picture_screen.dart';
 import 'package:e_commerce_app_flutter/screens/change_email/change_email_screen.dart';
 import 'package:e_commerce_app_flutter/screens/change_password/change_password_screen.dart';
@@ -296,6 +299,54 @@ class HomeScreenDrawer extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => HomeScreen(),
+                ));
+          },
+        ),
+        ListTile(
+          title: Text(
+            "Hada crop",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 15,
+            ),
+          ),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CropProductionScreen(),
+                ));
+          },
+        ),
+        ListTile(
+          title: Text(
+            "Hada which crop to grow ",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 15,
+            ),
+          ),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CropAdvisorScreen(),
+                ));
+          },
+        ),
+        ListTile(
+          title: Text(
+            "Hada N P K value of crop",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 15,
+            ),
+          ),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NutrientAdvisorScreen(),
                 ));
           },
         ),
