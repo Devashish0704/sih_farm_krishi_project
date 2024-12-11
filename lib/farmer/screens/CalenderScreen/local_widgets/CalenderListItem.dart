@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
@@ -41,11 +42,21 @@ Widget calenderListItem(BuildContext context,
             topLeft: Radius.circular(15),
             topRight: Radius.circular(15),
           ),
-          child: Image.network(
-            imageUrl!,
+          // child: Image.network(
+          //   imageUrl!,
+          //   fit: BoxFit.cover,
+          //   height: 200,
+          //   width: double.infinity,
+          // ),
+          child: CachedNetworkImage(
+            imageUrl: imageUrl!,
             fit: BoxFit.cover,
             height: 200,
             width: double.infinity,
+            placeholder: (context, url) => Center(
+              child: CircularProgressIndicator(),
+            ),
+            errorWidget: (context, url, error) => Icon(Icons.error),
           ),
         ),
         ExpandablePanel(
