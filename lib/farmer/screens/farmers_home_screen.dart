@@ -1,6 +1,9 @@
+import 'package:e_commerce_app_flutter/farmer/screens/BidScreen.dart';
 import 'package:e_commerce_app_flutter/farmer/screens/WeatherScreen/weatherservice.dart';
+import 'package:e_commerce_app_flutter/farmer/screens/areaToolScreen.dart';
 import 'package:e_commerce_app_flutter/farmer/services/UserInfoProvider.dart';
 import 'package:e_commerce_app_flutter/farmer/widgets/crop_inside_carousel.dart';
+import 'package:e_commerce_app_flutter/services/authentification/authentification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:marquee/marquee.dart';
@@ -314,6 +317,29 @@ class _FarmerHomeScreenState extends State<FarmerHomeScreen> {
                         onTap: () =>
                             Application.router.navigateTo(context, '/orders'),
                       ),
+                      _buildQuickActionButton(
+                          icon: Icons.bakery_dining,
+                          label: isEnglish ? 'BIDS' : 'आर्डर',
+                          onTap: () async {
+                            final currentUser = await AuthentificationService()
+                                .currentUser!
+                                .uid;
+
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BidScreen(
+                                      userId: currentUser, urlType: "farmer"),
+                                ));
+                          }),
+                      _buildQuickActionButton(
+                          icon: Icons.area_chart,
+                          label: isEnglish ? 'Area calculator' : 'आर्डर',
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Areatoolscreen(),
+                              ))),
                       // _buildQuickActionButton(
                       //   icon: Icons.logout,
                       //   label: isEnglish ? 'Log Out' : 'लॉग आउट',
