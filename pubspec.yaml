@@ -74,6 +74,7 @@ dependencies:
   toggle_switch: ^2.3.0
   lottie: ^2.4.0
   flutter_cached_pdfview: ^0.4.2
+  drop_down_list: ^0.0.8
   
 
   
