@@ -17,6 +17,7 @@ import 'package:e_commerce_app_flutter/screens/my_products/my_products_screen.da
 import 'package:e_commerce_app_flutter/screens/temp_blinkit/home_screen.dart';
 import 'package:e_commerce_app_flutter/services/authentification/authentification_service.dart';
 import 'package:e_commerce_app_flutter/services/database/user_database_helper.dart';
+import 'package:e_commerce_app_flutter/services/dp-ratio/sort_for_price.dart';
 import 'package:e_commerce_app_flutter/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -365,6 +366,31 @@ class HomeScreenDrawer extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => CropPriceAdvisorScreen(),
                 ));
+          },
+        ),
+        ListTile(
+          title: Text(
+            "Hada expected price of crop",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 15,
+            ),
+          ),
+          onTap: () async {
+            // List<Map<String, dynamic>> sortedData =
+            //     await fetchCategoryData("vegetables");
+            // print(sortedData);
+
+            // double total = calculateTop10AveragePrice(sortedData);
+            // print("total $total");
+
+            // updateFixedPrice(cropName, total);
+
+            // Map<String, Map<String, String>> productDetails =
+            //     await getProductKeysForStates(sortedData, "Roma Tomato");
+            Map<String, Map<String, String>> productDetails =
+                await getProductIdsAndPricesForCategory("vegetables");
+            print(productDetails);
           },
         ),
       ],

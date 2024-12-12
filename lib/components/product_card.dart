@@ -19,6 +19,7 @@ import '../farmer/services/Helpers.dart';
 class ProductCard extends StatelessWidget {
   final String productId;
   final bool userOnly;
+  final String price;
   final bool isEnglish;
   final GestureTapCallback press;
 
@@ -27,6 +28,7 @@ class ProductCard extends StatelessWidget {
     required this.press,
     this.userOnly = false,
     this.isEnglish = true,
+    required this.price,
   });
 
   void _deleteProductConfirmation(BuildContext context) {
@@ -38,8 +40,6 @@ class ProductCard extends StatelessWidget {
       ),
     );
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -156,12 +156,21 @@ class ProductCard extends StatelessWidget {
                               Chip(
                                 label: Text(
                                   product.price != null
-                                      ? '₹${product.price} / ${product.quantityName} '
+                                      ? '₹ ${price} / Quintal'
                                       : 'Uncategorized',
                                   style: TextStyle(fontSize: 12),
                                 ),
                                 backgroundColor: kPrimaryColor.withOpacity(0.1),
                               ),
+                              // Chip(
+                              //   label: Text(
+                              //     product.price != null
+                              //         ? '₹${product.price} / ${product.quantityName} '
+                              //         : 'Uncategorized',
+                              //     style: TextStyle(fontSize: 12),
+                              //   ),
+                              //   backgroundColor: kPrimaryColor.withOpacity(0.1),
+                              // ),
                               SizedBox(
                                 height: 5,
                               ),

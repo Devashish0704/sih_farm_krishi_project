@@ -30,6 +30,7 @@ class SearchField extends StatelessWidget {
         onSubmitted: (s) {
           print(s);
           onSubmit(s);
+          
         },
       ),
     );

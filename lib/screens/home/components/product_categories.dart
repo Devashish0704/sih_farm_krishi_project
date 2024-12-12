@@ -8,8 +8,8 @@ const String PRODUCT_TYPE_KEY = "product_type";
 final List<Map<String, dynamic>> productCategories = [
   <String, dynamic>{
     ICON_KEY: "assets/icons/cereal.svg",
-    TITLE_KEY: "Cereals",
-    PRODUCT_TYPE_KEY: "Cereals",
+    TITLE_KEY: "Grains",
+    PRODUCT_TYPE_KEY: "Grains",
   },
   <String, dynamic>{
     ICON_KEY: "assets/icons/fruits.svg",
