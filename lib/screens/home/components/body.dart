@@ -8,6 +8,7 @@ import 'package:e_commerce_app_flutter/farmer/screens/BidScreen.dart';
 import 'package:e_commerce_app_flutter/farmer/services/LocalizationProvider.dart';
 import 'package:e_commerce_app_flutter/screens/cart/cart_screen.dart';
 import 'package:e_commerce_app_flutter/screens/category_products/category_products_screen.dart';
+import 'package:e_commerce_app_flutter/screens/home/components/crop_calander.dart';
 import 'package:e_commerce_app_flutter/screens/product_details/product_details_screen.dart';
 import 'package:e_commerce_app_flutter/screens/search_result/search_result_screen.dart';
 import 'package:e_commerce_app_flutter/screens/webSceens/chatBot.dart';
@@ -16,6 +17,7 @@ import 'package:e_commerce_app_flutter/services/authentification/authentificatio
 import 'package:e_commerce_app_flutter/services/data_streams/all_products_stream.dart';
 import 'package:e_commerce_app_flutter/services/data_streams/favourite_products_stream.dart';
 import 'package:e_commerce_app_flutter/services/database/product_database_helper.dart';
+import 'package:e_commerce_app_flutter/services/dp-ratio/sort_for_price.dart';
 import 'package:e_commerce_app_flutter/size_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -349,76 +351,205 @@ class _BodyState extends State<Body> {
     final query = value.trim().toLowerCase();
     if (query.isEmpty) return;
 
-    try {
-      final Map<String, dynamic> searchedProductsIdandPrice =
-          await ProductDatabaseHelper().fetchProductIdsAndPrice(
-        cropName: query.toLowerCase(),
-      );
+                    try {
+                      // Call fetchProductIdsAndPrice with cropName
+                      final Map<String, dynamic> searchedProductsIdandPrice =
+                          await ProductDatabaseHelper().fetchProductIdsAndPrice(
+                              cropName: query.toLowerCase());
 
-      if (searchedProductsIdandPrice != null) {
-        List<dynamic> products = searchedProductsIdandPrice['products'];
-        List<String> productIds =
-            products.map((product) => product['product_id'] as String).toList();
+                      if (searchedProductsIdandPrice != null) {
+                        print(searchedProductsIdandPrice);
 
-        double productPrice = searchedProductsIdandPrice["average_price"];
-        int intProductPrice = productPrice.toInt();
+                        // Extract product IDs from the result
+                        List<dynamic> products =
+                            searchedProductsIdandPrice['products'];
+                        List<String> productIds = products
+                            .map((product) => product['product_id'] as String)
+                            .toList();
 
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SearchResultScreen(
-              searchQuery: query,
-              searchResultProductsId: productIds,
-              searchIn: "All Products",
-              productPrice: intProductPrice.toString(),
+                        // Optionally, you can also extract the average price if needed
+                        double productPrice =
+                            searchedProductsIdandPrice["average_price"];
+                        int intProductPrice = productPrice.toInt();
+
+>>>>>>> 9ede0af5c20ed19950ac9b8fe74c33b3a6ee0409
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SearchResultScreen(
+                              searchQuery: query,
+                              searchResultProductsId:
+                                  productIds, // Only product IDs
+                              searchIn: "All Products",
+                              productPrice:
+                                  intProductPrice.toString(), // Average price
+                            ),
+                          ),
+                        );
+                        await refreshPage();
+                      }
+                    } catch (e) {
+                      final error = e.toString();
+                      Logger().e(error);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("$error"),
+                        ),
+                      );
+                    }
+                  },
+                  onCartButtonPressed: () async {
+                    bool allowed =
+                        AuthentificationService().currentUserVerified;
+                    if (!allowed) {
+                      final reverify = await showConfirmationDialog(context,
+                          "You haven't verified your email address. This action is only allowed for verified users.",
+                          positiveResponse: "Resend verification email",
+                          negativeResponse: "Go back");
+                      if (reverify) {
+                        final future = AuthentificationService()
+                            .sendVerificationEmailToCurrentUser();
+                        await showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AsyncProgressDialog(
+                              future,
+                              message: Text("Resending verification email"),
+                            );
+                          },
+                        );
+                      }
+                      return;
+                    }
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CartScreen(),
+                      ),
+                    );
+                    await refreshPage();
+                  },
+                ),
+                SizedBox(height: getProportionateScreenHeight(15)),
+                GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 15,
+                  mainAxisSpacing: 20,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [
+                    _buildQuickActionButton(
+                        icon: Icons.add_box,
+                        label: isEnglish ? 'Add' : 'उत्पाद जोड़ें',
+                        onTap: () {}
+                        // onTap: () => Application.router
+                        //     .navigateTo(context, '/add-product'),
+                        ),
+                    _buildQuickActionButton(
+                        icon: Icons.storage,
+                        label: isEnglish ? 'My Products' : 'मेरे उत्पाद',
+                        onTap: () {}
+                        // onTap: () => Application.router
+                        //     .navigateTo(context, '/my-products/${user?.uid}'),
+                        ),
+                    _buildQuickActionButton(
+                        icon: Icons.chat_bubble_outline,
+                        label: isEnglish ? 'Chatbot' : 'बॉट चैट करें',
+                        onTap: () {}
+                        // onTap: () => Application.router
+                        //     .navigateTo(context, '/chatbot/$language'),
+                        ),
+                    _buildQuickActionButton(
+                        icon: Icons.calendar_today,
+                        label: isEnglish ? 'Crop Calendar' : 'फसल कैलेंडर',
+                        onTap: () {}
+                        // onTap: () =>
+                        //     Application.router.navigateTo(context, '/my-fields'),
+                        ),
+                    _buildQuickActionButton(
+                        icon: Icons.shopping_cart,
+                        label: isEnglish ? 'Orders' : 'आर्डर',
+                        onTap: () {}
+                        // onTap: () =>
+                        //     Application.router.navigateTo(context, '/orders'),
+                        ),
+                    _buildQuickActionButton(
+                        icon: Icons.bakery_dining,
+                        label: isEnglish ? 'BIDS' : 'आर्डर',
+                        onTap: () async {
+                          final currentUser =
+                              await AuthentificationService().currentUser!.uid;
+
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BidScreen(
+                                    userId: currentUser, urlType: "retailer"),
+                              ));
+                        }),
+                    // _buildQuickActionButton(
+                    //   icon: Icons.logout,
+                    //   label: isEnglish ? 'Log Out' : 'लॉग आउट',
+                    //   onTap: () => Provider.of<UserInfoProvider>(
+                    //     context,
+                    //     listen: false
+                    //   ).logOut(context),
+                    // ),
+                  ],
+                ),
+                SizedBox(height: getProportionateScreenHeight(15)),
+
+                // Updated to GridView
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Categories", style: headingStyle),
+                    SizedBox(height: getProportionateScreenHeight(15)),
+                    SizedBox(
+                      height: SizeConfig.screenHeight *
+                          0.4, // Adjusted height to accommodate grid
+                      child: GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4, // 3 columns
+                          childAspectRatio: 1, // Square cells
+                          crossAxisSpacing: 5, // Spacing between columns
+                          mainAxisSpacing: 10, // Spacing between rows
+                        ),
+                        // scrollDirection:
+                        //     Axis.horizontal, // Allow horizontal scrolling
+                        physics: BouncingScrollPhysics(),
+                        itemCount: productCategories.length,
+                        itemBuilder: (context, index) {
+                          return ProductTypeBox(
+                            icon: productCategories[index][ICON_KEY],
+                            title: productCategories[index][TITLE_KEY],
+                            onPress: () {
+                              // print();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CategoryProductsScreen(
+                                    category: productCategories[index]
+                                        [PRODUCT_TYPE_KEY],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: getProportionateScreenHeight(20)),
+                // SizedBox(height: getProportionateScreenHeight(80)),
+              ],
             ),
           ),
-        );
-        await refreshPage();
-      }
-    } catch (e) {
-      final error = e.toString();
-      Logger().e(error);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("$error"),
         ),
-      );
-    }
-  }
-
-  // Cart Navigation Handler
-  Future<void> _handleCartNavigation() async {
-    bool allowed = AuthentificationService().currentUserVerified;
-    if (!allowed) {
-      final reverify = await showConfirmationDialog(
-        context,
-        "You haven't verified your email address. This action is only allowed for verified users.",
-        positiveResponse: "Resend verification email",
-        negativeResponse: "Go back",
-      );
-      if (reverify) {
-        final future =
-            AuthentificationService().sendVerificationEmailToCurrentUser();
-        await showDialog(
-          context: context,
-          builder: (context) {
-            return AsyncProgressDialog(
-              future,
-              message: Text("Resending verification email"),
-            );
-          },
-        );
-      }
-      return;
-    }
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CartScreen(),
       ),
     );
-    await refreshPage();
   }
 
   Future<void> refreshPage() {
