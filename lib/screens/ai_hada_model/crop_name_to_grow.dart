@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-
-
 class CropAdvisorScreen extends StatefulWidget {
   @override
   _CropAdvisorScreenState createState() => _CropAdvisorScreenState();
@@ -9,7 +7,13 @@ class CropAdvisorScreen extends StatefulWidget {
 
 class _CropAdvisorScreenState extends State<CropAdvisorScreen> {
   final _formKey = GlobalKey<FormState>();
-  double _n = 0, _p = 0, _k = 0, _temperature = 0, _humidity = 0, _ph = 0, _rainfall = 0;
+  double _n = 0,
+      _p = 0,
+      _k = 0,
+      _temperature = 0,
+      _humidity = 0,
+      _ph = 0,
+      _rainfall = 0;
   List<String> _suggestedCrops = [];
 
   @override
@@ -42,19 +46,26 @@ class _CropAdvisorScreenState extends State<CropAdvisorScreen> {
                 ),
 
                 // Input Fields
-                _inputField('Nitrogen (N)', TextInputType.number, (value) => _n = double.parse(value!)),
+                _inputField('Nitrogen (N)', TextInputType.number,
+                    (value) => _n = double.parse(value!)),
                 SizedBox(height: 16),
-                _inputField('Phosphorus (P)', TextInputType.number, (value) => _p = double.parse(value!)),
+                _inputField('Phosphorus (P)', TextInputType.number,
+                    (value) => _p = double.parse(value!)),
                 SizedBox(height: 16),
-                _inputField('Potassium (K)', TextInputType.number, (value) => _k = double.parse(value!)),
+                _inputField('Potassium (K)', TextInputType.number,
+                    (value) => _k = double.parse(value!)),
                 SizedBox(height: 16),
-                _inputField('Temperature (°C)', TextInputType.number, (value) => _temperature = double.parse(value!)),
+                _inputField('Temperature (°C)', TextInputType.number,
+                    (value) => _temperature = double.parse(value!)),
                 SizedBox(height: 16),
-                _inputField('Humidity (%)', TextInputType.number, (value) => _humidity = double.parse(value!)),
+                _inputField('Humidity (%)', TextInputType.number,
+                    (value) => _humidity = double.parse(value!)),
                 SizedBox(height: 16),
-                _inputField('Soil pH', TextInputType.number, (value) => _ph = double.parse(value!)),
+                _inputField('Soil pH', TextInputType.number,
+                    (value) => _ph = double.parse(value!)),
                 SizedBox(height: 16),
-                _inputField('Rainfall (mm)', TextInputType.number, (value) => _rainfall = double.parse(value!)),
+                _inputField('Rainfall (mm)', TextInputType.number,
+                    (value) => _rainfall = double.parse(value!)),
 
                 // Submit Button
                 SizedBox(height: 24),
@@ -90,16 +101,21 @@ class _CropAdvisorScreenState extends State<CropAdvisorScreen> {
                       SizedBox(height: 24),
                       Text(
                         'Suggested Crops for Your Location:',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      ..._suggestedCrops.map((crop) => Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Chip(
-                              label: Text(crop),
-                              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
-                              labelStyle: TextStyle(color: Colors.black),
-                            ),
-                          )).toList(),
+                      ..._suggestedCrops
+                          .map((crop) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Chip(
+                                  label: Text(crop),
+                                  backgroundColor: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.2),
+                                  labelStyle: TextStyle(color: Colors.black),
+                                ),
+                              ))
+                          .toList(),
                     ],
                   ),
               ],
@@ -110,7 +126,8 @@ class _CropAdvisorScreenState extends State<CropAdvisorScreen> {
     );
   }
 
-  Widget _inputField(String label, TextInputType inputType, Function(String?) onSaved) {
+  Widget _inputField(
+      String label, TextInputType inputType, Function(String?) onSaved) {
     return TextFormField(
       keyboardType: inputType,
       decoration: InputDecoration(

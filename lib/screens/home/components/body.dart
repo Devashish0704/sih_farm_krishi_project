@@ -98,11 +98,14 @@ class _BodyState extends State<Body> {
                 HomeHeader(
                   onSearchSubmitted: (value) async {
                     final query = value.toString();
+                    print(query);
                     if (query.length <= 0) return;
                     List<String> searchedProductsId;
                     try {
+                      print("printed " + query);
                       searchedProductsId = await ProductDatabaseHelper()
                           .searchInProducts(query.toLowerCase());
+                      print(searchedProductsId);
                       if (searchedProductsId != null) {
                         await Navigator.push(
                           context,

@@ -5,4 +5,6 @@ class AppUrl {
 
   static const String navigationAI = '$baseUrl/generate-action';
   static const String navigationAIget = '$baseUrl';
+  static const String rainfall_api =
+      'https://4cfa-103-232-241-223.ngrok-free.app/api/rainfall';
 }
