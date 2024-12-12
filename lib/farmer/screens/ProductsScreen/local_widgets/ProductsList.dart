@@ -64,6 +64,7 @@ class ProductsList extends StatelessWidget {
                   userOnly: userOnly,
                   productId: products[index].id,
                   isEnglish: isEnglish,
+                  price: '999',
                 ),
                 itemCount: products.length,
               );
