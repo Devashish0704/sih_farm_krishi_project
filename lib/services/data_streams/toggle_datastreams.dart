@@ -1,36 +1,34 @@
-import 'package:e_commerce_app_flutter/services/data_streams/data_stream.dart';
-import 'package:e_commerce_app_flutter/services/database/product_database_helper.dart';
+import 'dart:async';
 
-class BestSearchProductsStream extends DataStream<List<String>> {
-  final String category;
+import 'package:e_commerce_app_flutter/services/dp-ratio/sort_for_price.dart';
 
-  BestSearchProductsStream({required this.category});
+class CropDetailsStream {
+  // StreamController for crop details
+  final StreamController<Map<String, dynamic>> _cropDetailsController =
+      StreamController<Map<String, dynamic>>();
 
-  @override
-  void reload() async {
+  // Expose the stream for listening
+  Stream<Map<String, dynamic>> get cropDetailsStream =>
+      _cropDetailsController.stream;
+
+  // Function to fetch crop details and add them to the stream
+  Future<void> fetchCropDetails(String category) async {
     try {
-      final bestSearchProducts = await ProductDatabaseHelper()
-          .getProductsByCategoryAndRating(category);
-      addData(bestSearchProducts.map((product) => product.id).toList());
+      Map<String, Map<String, String>> productDetails =
+          await getProductIdsAndPricesForCategory(category.toLowerCase());
+
+      print(productDetails);
+
+      // Add data to the stream
+      _cropDetailsController.add(productDetails);
     } catch (e) {
-      addError(e);
+      // Add error to the stream
+      _cropDetailsController.addError(e);
     }
   }
-}
 
-class NearbyProductsStream extends DataStream<List<String>> {
-  final String category;
-
-  NearbyProductsStream({required this.category});
-
-  @override
-  void reload() async {
-    try {
-      final nearbyProducts =
-          await ProductDatabaseHelper().getNearbyProducts(category);
-      addData(nearbyProducts.map((product) => product.id).toList());
-    } catch (e) {
-      addError(e);
-    }
+  // Dispose the StreamController
+  void dispose() {
+    _cropDetailsController.close();
   }
 }

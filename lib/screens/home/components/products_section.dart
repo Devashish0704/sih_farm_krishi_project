@@ -96,7 +96,7 @@ class ProductsSection extends StatelessWidget {
             onProductCardTapped.call(productsId[index]);
           },
           userOnly: false,
-          isEnglish: true,
+          isEnglish: true, price: '999',
         );
       },
     );
