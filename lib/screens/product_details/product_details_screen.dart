@@ -24,7 +24,7 @@ class ProductDetailsScreen extends StatelessWidget {
         body: Body(
           productId: productId,
         ),
-        floatingActionButton: AddToCartFAB(productId: productId),
+        floatingActionButton: AddToCartFABRow(productId: productId),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
