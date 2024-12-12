@@ -32,6 +32,7 @@ Future<List<Map<String, dynamic>>> fetchAndSortCropData(String cropName) async {
           .sort((a, b) => (b['d_p'] as double).compareTo(a['d_p'] as double));
 
       print(6);
+      print("statesList $statesList");
       return statesList;
     } else {
       print('Document for crop $cropName does not exist.');
@@ -39,6 +40,7 @@ Future<List<Map<String, dynamic>>> fetchAndSortCropData(String cropName) async {
     }
   } catch (e) {
     print('Error fetching crop data: $e');
+
     return [];
   }
 }
@@ -57,6 +59,8 @@ double calculateTop10AveragePrice(List<Map<String, dynamic>> statesList) {
       top10States.fold(0.0, (sum, state) => sum + (state['price'] as double));
   double averagePrice = totalPrice / top10States.length;
 
+  print("averageprice $averagePrice");
+
   return averagePrice;
 }
 
@@ -68,21 +72,19 @@ Future<void> updateFixedPrice(String cropName, double fixedPrice) async {
 
     // Update the 'fixed_price' field for the specific crop document
     await collectionRef.doc(cropName).update({'fixed_price': fixedPrice});
-    print('Fixed price updated successfully for crop $cropName.');
-  } catch (e) {
-    print('Error updating fixed price: $e');
-  }
-}
-Future<void> updateFixedPricetoProducts(
-    String productId, double fixedPrice) async {
-  try {
-    // Reference to the Firestore collection
-    CollectionReference collectionRef =
-        FirebaseFirestore.instance.collection('products');
 
-    // Update the 'price' field for the specific product document
-    await collectionRef.doc(productId).update({'price': fixedPrice});
-    print('Fixed price updated successfully for product ID $productId.');
+    // Since we don't have the product ID, we need to query the 'products' collection
+    // to find documents with the matching 'cropName' and update their 'price' field.
+    CollectionReference productsCollection =
+        FirebaseFirestore.instance.collection('products');
+    QuerySnapshot querySnapshot =
+        await productsCollection.where('name', isEqualTo: cropName).get();
+
+    for (var doc in querySnapshot.docs) {
+      print("doc $doc");
+      await doc.reference.update({'price': fixedPrice});
+    }
+    print('Fixed price updated successfully for crop $cropName.');
   } catch (e) {
     print('Error updating fixed price: $e');
   }
@@ -123,7 +125,7 @@ Future<Map<String, Map<String, String>>> getProductKeysForStates(
   } catch (e) {
     print('Error fetching product details: $e');
   }
-
+  print("stateProductDetails $stateProductDetails");
   return stateProductDetails;
 }
 
@@ -142,7 +144,7 @@ Future<void> updatePricesForCropInProducts(
 
       if (productId != null) {
         // Update the price for this product
-        await updateFixedPricetoProducts(productId, fixedPrice);
+        // await updateFixedPricetoProducts(productId, fixedPrice);
         print('Updated price for product ID $productId in state $state.');
       }
     }
@@ -150,6 +152,7 @@ Future<void> updatePricesForCropInProducts(
     print('Error updating prices for products: $e');
   }
 }
+
 Future<Map<String, Map<String, String>>> getProductKeysForStatesusingCategory(
     List<Map<String, dynamic>> sortedStatesList, String categoryName) async {
   Map<String, Map<String, String>> stateProductDetails = {};
@@ -205,11 +208,11 @@ Future<Map<String, Map<String, String>>> getProductIdsAndPricesForCategory(
   print(1);
   try {
     // Check if the category exists in the cropCategories map
-  print(2);
+    print(2);
     if (cropCategories.containsKey(categoryName)) {
       List<String> crops = cropCategories[categoryName]!;
 
-  print(3);
+      print(3);
       // Reference to the Firestore collection
       CollectionReference productsCollection =
           FirebaseFirestore.instance.collection('products');

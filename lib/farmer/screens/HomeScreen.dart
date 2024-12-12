@@ -1,6 +1,7 @@
 import 'package:e_commerce_app_flutter/farmer/screens/VideoScreen.dart';
 import 'package:e_commerce_app_flutter/farmer/screens/farmers_home_screen.dart';
 import 'package:e_commerce_app_flutter/farmer/screens/playlist_screen.dart';
+import 'package:e_commerce_app_flutter/services/database/product_database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:line_icons/line_icons.dart';
@@ -27,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    ProductDatabaseHelper().determinePosition();
     _pages = [
       FarmerHomeScreen(),
       Playlist(),

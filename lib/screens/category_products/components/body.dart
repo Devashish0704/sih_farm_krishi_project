@@ -499,17 +499,6 @@ class _BodyState extends State<Body> {
                     await getProductKeysForStates(
                         sortedData, query.toLowerCase());
 
-                for (var state in productDetails.keys) {
-                  String? productId = productDetails[state]?['productId'];
-                  print(productId);
-                  if (productId != null) {
-                    // Update the price for this product
-                    await updateFixedPricetoProducts(productId, total);
-                    print(
-                        'Updated price for product ID $productId in state $state.');
-                  }
-                }
-
                 if (total != null) {
                   double productPrice = total;
                   int intProductPrice = productPrice.toInt();

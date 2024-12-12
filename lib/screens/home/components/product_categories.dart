@@ -23,8 +23,8 @@ final List<Map<String, dynamic>> productCategories = [
   },
   <String, dynamic>{
     ICON_KEY: "assets/icons/wheat.svg",
-    TITLE_KEY: "Pulses",
-    PRODUCT_TYPE_KEY: "Pulses",
+    TITLE_KEY: "Grains",
+    PRODUCT_TYPE_KEY: "grains",
   },
   // <String, dynamic>{
   //   ICON_KEY: "assets/icons/milk.svg",

@@ -16,7 +16,7 @@ import '../constants.dart';
 import 'package:e_commerce_app_flutter/models/Product.dart';
 import '../farmer/services/Helpers.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends StatefulWidget {
   final String productId;
   final bool userOnly;
   final String price;
@@ -31,12 +31,19 @@ class ProductCard extends StatelessWidget {
     required this.price,
   });
 
+  @override
+  _ProductCardState createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  bool _isLoadingLocation = true; // Track loading state for location
+
   void _deleteProductConfirmation(BuildContext context) {
     showDialog(
       context: context,
       builder: (ctx) => ConfirmationDialog(
         () => Provider.of<ProductsBloc>(context, listen: false)
-            .deleteProduct(productId),
+            .deleteProduct(widget.productId),
       ),
     );
   }
@@ -44,24 +51,27 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Product>(
-      future: ProductDatabaseHelper().getProductWithID(productId),
+      future: ProductDatabaseHelper().getProductWithID(widget.productId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final Product product = snapshot.data!;
-          print(product);
           return FutureBuilder<Position>(
-            future: ProductDatabaseHelper().getProductLocation(productId),
+            future:
+                ProductDatabaseHelper().getProductLocation(widget.productId),
             builder: (context, locationSnapshot) {
-              if (locationSnapshot.hasData) {
+              if (locationSnapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                    child:
+                        CircularProgressIndicator()); // Show loading indicator
+              } else if (locationSnapshot.hasData) {
                 Position productLocation = locationSnapshot.data!;
-                Position? userLocation = ProductDatabaseHelper()
-                    .userLocation!; // Use the stored user location
+                Position? userLocation = ProductDatabaseHelper().userLocation!;
                 double distance = ProductDatabaseHelper()
                         .calculateDistance(userLocation, productLocation) /
-                    1000; // Convert to km
+                    1000;
 
                 return GestureDetector(
-                  onTap: press,
+                  onTap: widget.press,
                   child: Container(
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(26, 122, 224, 142),
@@ -157,7 +167,7 @@ class ProductCard extends StatelessWidget {
                               Chip(
                                 label: Text(
                                   product.price != null
-                                      ? '₹ ${price} / Quintal'
+                                      ? '₹ ${widget.price} / Quintal'
                                       : 'Uncategorized',
                                   style: TextStyle(fontSize: 12),
                                 ),
@@ -209,9 +219,6 @@ class ProductCard extends StatelessWidget {
                     ),
                   ),
                 );
-              } else if (locationSnapshot.connectionState ==
-                  ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
               } else {
                 return Center(child: Text('Location not available'));
               }

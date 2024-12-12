@@ -73,14 +73,11 @@ class _BodyState extends State<Body> {
 
                 // Home Header with Search
                 HomeHeader(
-<<<<<<< HEAD
                   onSearchSubmitted: (value) async {
                     final query = value.trim().toLowerCase();
                     if (query.isEmpty) return;
 
                     try {
-                   
-
                       List<Map<String, dynamic>> sortedData =
                           await fetchAndSortCropData(query.toLowerCase());
 
@@ -100,7 +97,7 @@ class _BodyState extends State<Body> {
                         print(productId);
                         if (productId != null) {
                           // Update the price for this product
-                          await updateFixedPricetoProducts(productId, total);
+                          // await updateFixedPricetoProducts(productId, total);
                           print(
                               'Updated price for product ID $productId in state $state.');
                         }
@@ -167,10 +164,9 @@ class _BodyState extends State<Body> {
                     );
                     await refreshPage();
                   },
-=======
-                  onSearchSubmitted: _handleSearchSubmission,
-                  onCartButtonPressed: _handleCartNavigation,
->>>>>>> 78da321d47c24bb90641a19ce8689ffbae6c2ce5
+
+                  // onSearchSubmitted: _handleSearchSubmission,
+                  // onCartButtonPressed: _handleCartNavigation,
                 ),
 
                 SizedBox(height: getProportionateScreenHeight(15)),
@@ -546,7 +542,7 @@ class _BodyState extends State<Body> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 35, color: Colors.green),  
+            Icon(icon, size: 35, color: Colors.green),
             SizedBox(height: 8),
             Text(
               label,
