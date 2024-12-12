@@ -48,6 +48,7 @@ class ProductCard extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final Product product = snapshot.data!;
+          print(product);
           return FutureBuilder<Position>(
             future: ProductDatabaseHelper().getProductLocation(productId),
             builder: (context, locationSnapshot) {

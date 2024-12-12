@@ -79,10 +79,7 @@ class _BodyState extends State<Body> {
                     if (query.isEmpty) return;
 
                     try {
-                      // Call fetchProductIdsAndPrice with cropName
-                      // final Map<String, dynamic> searchedProductsIdandPrice =
-                      // await ProductDatabaseHelper().fetchProductIdsAndPrice(
-                      //     cropName: query.toLowerCase());
+                   
 
                       List<Map<String, dynamic>> sortedData =
                           await fetchAndSortCropData(query.toLowerCase());
@@ -326,7 +323,7 @@ class _BodyState extends State<Body> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 35, color: Colors.green),
+            Icon(icon, size: 35, color: Colors.green),  
             SizedBox(height: 8),
             Text(
               label,
