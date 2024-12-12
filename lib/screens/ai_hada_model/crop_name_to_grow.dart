@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-=======
+
 import 'package:http/http.dart' as http; // Import the http package
 import 'dart:convert'; // Import for jsonEncode
->>>>>>> 9ede0af5c20ed19950ac9b8fe74c33b3a6ee0409
 
 class CropAdvisorScreen extends StatefulWidget {
   @override
@@ -12,16 +10,6 @@ class CropAdvisorScreen extends StatefulWidget {
 
 class _CropAdvisorScreenState extends State<CropAdvisorScreen> {
   final _formKey = GlobalKey<FormState>();
-<<<<<<< HEAD
-  double _n = 0,
-      _p = 0,
-      _k = 0,
-      _temperature = 0,
-      _humidity = 0,
-      _ph = 0,
-      _rainfall = 0;
-  List<String> _suggestedCrops = [];
-=======
   String _nitrogen = ''; // Variable to hold nitrogen value
   String _phosphorus = ''; // Variable to hold phosphorus value
   String _potassium = ''; // Variable to hold potassium value
@@ -30,7 +18,6 @@ class _CropAdvisorScreenState extends State<CropAdvisorScreen> {
   String _ph = ''; // Variable to hold pH value
   String _rainfall = ''; // Variable to hold rainfall value
   String _suggestedCrop = ''; // Variable to hold the suggested crop
->>>>>>> 9ede0af5c20ed19950ac9b8fe74c33b3a6ee0409
 
   @override
   Widget build(BuildContext context) {
@@ -68,29 +55,6 @@ class _CropAdvisorScreenState extends State<CropAdvisorScreen> {
                 ),
                 SizedBox(height: 16),
 
-<<<<<<< HEAD
-                // Input Fields
-                _inputField('Nitrogen (N)', TextInputType.number,
-                    (value) => _n = double.parse(value!)),
-                SizedBox(height: 16),
-                _inputField('Phosphorus (P)', TextInputType.number,
-                    (value) => _p = double.parse(value!)),
-                SizedBox(height: 16),
-                _inputField('Potassium (K)', TextInputType.number,
-                    (value) => _k = double.parse(value!)),
-                SizedBox(height: 16),
-                _inputField('Temperature (°C)', TextInputType.number,
-                    (value) => _temperature = double.parse(value!)),
-                SizedBox(height: 16),
-                _inputField('Humidity (%)', TextInputType.number,
-                    (value) => _humidity = double.parse(value!)),
-                SizedBox(height: 16),
-                _inputField('Soil pH', TextInputType.number,
-                    (value) => _ph = double.parse(value!)),
-                SizedBox(height: 16),
-                _inputField('Rainfall (mm)', TextInputType.number,
-                    (value) => _rainfall = double.parse(value!)),
-=======
                 // Phosphorus Input Field with Constraints
                 TextFormField(
                   decoration: InputDecoration(
@@ -222,7 +186,6 @@ class _CropAdvisorScreenState extends State<CropAdvisorScreen> {
                   onChanged: (value) => _rainfall = value,
                 ),
                 SizedBox(height: 16),
->>>>>>> 9ede0af5c20ed19950ac9b8fe74c33b3a6ee0409
 
                 // Submit Button
                 ElevatedButton(
@@ -285,24 +248,6 @@ class _CropAdvisorScreenState extends State<CropAdvisorScreen> {
                     children: [
                       SizedBox(height: 24),
                       Text(
-<<<<<<< HEAD
-                        'Suggested Crops for Your Location:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      ..._suggestedCrops
-                          .map((crop) => Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: Chip(
-                                  label: Text(crop),
-                                  backgroundColor: Theme.of(context)
-                                      .primaryColor
-                                      .withOpacity(0.2),
-                                  labelStyle: TextStyle(color: Colors.black),
-                                ),
-                              ))
-                          .toList(),
-=======
                         'Suggested Crop for Your Location:',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
@@ -316,7 +261,6 @@ class _CropAdvisorScreenState extends State<CropAdvisorScreen> {
                           labelStyle: TextStyle(color: Colors.black),
                         ),
                       ),
->>>>>>> 9ede0af5c20ed19950ac9b8fe74c33b3a6ee0409
                     ],
                   ),
               ],
@@ -326,25 +270,4 @@ class _CropAdvisorScreenState extends State<CropAdvisorScreen> {
       ),
     );
   }
-<<<<<<< HEAD
-
-  Widget _inputField(
-      String label, TextInputType inputType, Function(String?) onSaved) {
-    return TextFormField(
-      keyboardType: inputType,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter a value';
-        }
-        return null;
-      },
-      onSaved: onSaved,
-    );
-  }
-=======
->>>>>>> 9ede0af5c20ed19950ac9b8fe74c33b3a6ee0409
 }
