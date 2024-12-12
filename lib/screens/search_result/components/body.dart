@@ -5,15 +5,17 @@ import 'package:e_commerce_app_flutter/screens/product_details/product_details_s
 import 'package:e_commerce_app_flutter/size_config.dart';
 import 'package:flutter/material.dart';
 
-class Body extends StatelessWidget {
+class BodyForSearchResult extends StatelessWidget {
   final String searchQuery;
   final List<String> searchResultProductsId;
   final String searchIn;
+  final String price;
 
-  const Body({
+  const BodyForSearchResult({
     required this.searchQuery,
     required this.searchResultProductsId,
     required this.searchIn,
+    required this.price,
   });
 
   @override
@@ -110,6 +112,8 @@ class Body extends StatelessWidget {
                   },
                   userOnly: false,
                   isEnglish: true,
+                  price:
+                      price, // Pass the price (average price for crop-based search)
                 );
               },
             );

@@ -24,6 +24,7 @@ class ProductDatabaseHelper {
 
   Future<List<String>> searchInProducts(String query,
       {String? category}) async {
+    // print("query: $query category $category");
     Query<Map<String, dynamic>> queryRef;
     if (category == null) {
       queryRef = firestore.collection(PRODUCTS_COLLECTION_NAME);
@@ -59,6 +60,7 @@ class ProductDatabaseHelper {
     print(productsId);
     return productsId.toList();
   }
+
   // Future<List<String>> searchInProducts(String query,
   //     {ProductType? productType}) async {
   //   Query<Map<String, dynamic>> queryRef;
@@ -92,6 +94,283 @@ class ProductDatabaseHelper {
   //   print(productsId);
   //   return productsId.toList();
   // }
+
+  // Future<Map<String, dynamic>> fetchProductIdsAndPrice(
+  //   String cropName,
+  // ) async {
+  //   // print("0");
+  //   try {
+  //     // Step 1: Fetch the crop document
+  //     print("1");
+  //     final cropDoc =
+  //         await firestore.collection('crops-demand').doc(cropName).get();
+  //     print("1a");
+  //     // print(cropDoc.);
+
+  //     if (!cropDoc.exists) {
+  //       throw Exception("Crop document not found");
+  //     }
+
+  //     print("2");
+  //     // Step 2: Extract and process state-level data
+  //     Map<String, dynamic> cropData = cropDoc.data() ?? {};
+  //     Map<String, dynamic> statesData =
+  //         cropData['states'] ?? {}; // Explicitly access 'states'
+
+  //     List<Map<String, dynamic>> statesList = [];
+  //     for (var entry in statesData.entries) {
+  //       final stateName =
+  //           entry.key; // Should be 'himachalpradesh', 'tripura', etc.
+  //       final stateData = entry.value;
+
+  //       if (stateData is Map<String, dynamic>) {
+  //         statesList.add({
+  //           'state': stateName,
+  //           'production': stateData['production'] ?? 0.0,
+  //           'demand': stateData['demand'] ?? 0.0,
+  //           'price': stateData['price'] ?? 0.0,
+  //         });
+  //       } else {
+  //         print("Invalid data for state: $stateName");
+  //       }
+  //     }
+
+  //     print("Processed states list: $statesList");
+
+  //     print("3");
+
+  //     // Sort states by production-demand difference (production - demand)
+  //     statesList.sort((a, b) {
+  //       double demandDiffA = a['production'] - a['demand'];
+  //       double demandDiffB = b['production'] - b['demand'];
+  //       return demandDiffB.compareTo(demandDiffA); // Descending order
+  //     });
+  //     // print("4");
+
+  //     // Step 3: Calculate the average price of the top 10 states
+  //     List<double> prices = statesList
+  //         .map((state) => state['price'] as double)
+  //         .toList()
+  //       ..sort((a, b) => b.compareTo(a)); // Descending order
+
+  //     int count = prices.length < 10 ? prices.length : 10;
+  //     double averagePrice = count > 0
+  //         ? prices.sublist(0, count).reduce((a, b) => a + b) / count
+  //         : 0.0;
+
+  //     // print("5");
+  //     // Step 4: Fetch product IDs from the products collection
+  //     Set<String> productIds = {};
+  //     for (var state in statesList) {
+  //       print(state);
+  //       final productQuery = await firestore
+  //           .collection('products')
+  //           .where('state', isEqualTo: state['state'])
+  //           .get();
+
+  //       for (var product in productQuery.docs) {
+  //         final productData = product.data();
+
+  //         // Match cropName in multiple fields
+  //         if ((productData['name'] as String?)
+  //                     ?.toLowerCase()
+  //                     .contains(cropName.toLowerCase()) ==
+  //                 true ||
+  //             (productData['description'] as String?)
+  //                     ?.toLowerCase()
+  //                     .contains(cropName.toLowerCase()) ==
+  //                 true ||
+  //             (productData['highlights']
+  //                     ?.toString()
+  //                     .toLowerCase()
+  //                     .contains(cropName.toLowerCase()) ??
+  //                 false) ||
+  //             (productData['variant']
+  //                     ?.toString()
+  //                     .toLowerCase()
+  //                     .contains(cropName.toLowerCase()) ??
+  //                 false) ||
+  //             (productData['seed_company'] as String?)
+  //                     ?.toLowerCase()
+  //                     .contains(cropName.toLowerCase()) ==
+  //                 true) {
+  //           productIds.add(product.id);
+  //         }
+  //       }
+  //     }
+  //     // print("7");
+
+  //     return {
+  //       'product_ids': productIds.toList(),
+  //       'average_price': averagePrice,
+  //     };
+  //   } catch (e) {
+  //     print("Error fetching product IDs and price: $e");
+  //     return {
+  //       'product_ids': [],
+  //       'average_price': 0.0,
+  //     };
+  //   }
+  // }
+
+  Future<Map<String, dynamic>> fetchProductIdsAndPrice({
+    String? cropName,
+    String? category,
+  }) async {
+    // Static map for categories
+    const Map<String, List<String>> cropCategories = {
+      'fruits': ['banana', 'orange'],
+      'vegetables': ['cauliflower', 'onion', 'potato', 'tomato'],
+      'grains': ['rice', 'wheat'],
+    };
+
+    try {
+      print("cATEGORY $category");
+      if (category != null && cropCategories.containsKey(category)) {
+        // Retrieve crops from the category
+        List<String> crops =
+            (cropCategories[category] as List<dynamic>).cast<String>();
+
+        print(crops);
+
+        Set<String> productIds = {};
+
+        for (var crop in crops) {
+          print(crop);
+          final cropResult = await _fetchCropDetails(crop);
+          productIds.addAll(cropResult['product_ids'] ?? []);
+        }
+
+        return {
+          'product_ids': productIds.toList(),
+          'average_price': 0.0, // Placeholder: Compute average if required
+        };
+      } else if (cropName != null) {
+        // Use the existing logic for a specific crop name
+        return await _fetchCropDetails(cropName);
+      } else {
+        throw Exception("Either cropName or category must be provided");
+      }
+    } catch (e) {
+      print("Error fetching product IDs and price: $e");
+      return {
+        'product_ids': [],
+        'average_price': 0.0,
+      };
+    }
+  }
+
+// Helper function to fetch crop details based on cropName
+  Future<Map<String, dynamic>> _fetchCropDetails(String cropName) async {
+    try {
+      final cropDoc =
+          await firestore.collection('crops-demand').doc(cropName).get();
+
+      if (!cropDoc.exists) {
+        throw Exception("Crop document not found");
+      }
+
+      print("Crop document found.");
+
+      Map<String, dynamic> cropData = cropDoc.data() ?? {};
+      Map<String, dynamic> statesData = cropData['states'] ?? {};
+
+      List<Map<String, dynamic>> statesList = [];
+      for (var entry in statesData.entries) {
+        final stateName = entry.key;
+        final stateData = entry.value;
+
+        if (stateData is Map<String, dynamic>) {
+          statesList.add({
+            'state': stateName,
+            'production': (stateData['production'] as num?)?.toDouble() ?? 0.0,
+            'demand': (stateData['demand'] as num?)?.toDouble() ?? 0.0,
+            'price': (stateData['price'] as num?)?.toDouble() ?? 0.0,
+          });
+        } else {
+          print("Invalid data for state: $stateName");
+        }
+      }
+
+      // Sort states by production-demand difference
+      statesList.sort((a, b) {
+        double demandDiffA = a['production'] - a['demand'];
+        double demandDiffB = b['production'] - b['demand'];
+        return demandDiffB.compareTo(demandDiffA);
+      });
+
+      // Calculate average price
+      List<double> prices = statesList
+          .map((state) => (state['price'] as num?)?.toDouble() ?? 0.0)
+          .toList()
+        ..sort((a, b) => b.compareTo(a));
+
+      int count = prices.length < 10 ? prices.length : 10;
+      double averagePrice = count > 0
+          ? prices.sublist(0, count).reduce((a, b) => a + b) / count
+          : 0.0;
+
+      print("Average price calculated: $averagePrice");
+
+      // Fetch product IDs and their corresponding prices
+      List<Map<String, dynamic>> productsWithPrice = [];
+
+      for (var state in statesList) {
+        final productQuery = await firestore
+            .collection('products')
+            .where('state', isEqualTo: state['state'])
+            .get();
+
+        for (var product in productQuery.docs) {
+          final productData = product.data();
+          double productPrice =
+              (productData['price'] as num?)?.toDouble() ?? 0.0;
+
+          // Check crop name match in multiple fields
+          if ((productData['name'] as String?)
+                      ?.toLowerCase()
+                      .contains(cropName.toLowerCase()) ==
+                  true ||
+              (productData['description'] as String?)
+                      ?.toLowerCase()
+                      .contains(cropName.toLowerCase()) ==
+                  true ||
+              (productData['highlights']
+                      ?.toString()
+                      .toLowerCase()
+                      .contains(cropName.toLowerCase()) ??
+                  false) ||
+              (productData['variant']
+                      ?.toString()
+                      .toLowerCase()
+                      .contains(cropName.toLowerCase()) ??
+                  false) ||
+              (productData['seed_company'] as String?)
+                      ?.toLowerCase()
+                      .contains(cropName.toLowerCase()) ==
+                  true) {
+            productsWithPrice.add({
+              'product_id': product.id,
+              'product_price': productPrice,
+            });
+          }
+        }
+      }
+
+      print("Products with price: $productsWithPrice");
+
+      return {
+        'products': productsWithPrice,
+        'average_price': averagePrice,
+      };
+    } catch (e) {
+      print("Error fetching crop details: $e");
+      return {
+        'products': [],
+        'average_price': 0.0,
+      };
+    }
+  }
 
   Future<List<String>> searchInProductsByCategory(String category) async {
     // Create a reference to the products collection

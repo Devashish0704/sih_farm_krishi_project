@@ -3,6 +3,8 @@ import 'package:drop_down_list/model/selected_list_item.dart';
 import 'package:e_commerce_app_flutter/data/hada_state-dis.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CropPriceAdvisorScreen extends StatefulWidget {
   @override
@@ -17,6 +19,7 @@ class _CropPriceAdvisorScreenState extends State<CropPriceAdvisorScreen> {
   String? _selectedCommodity;
   DateTime _selectedDate = DateTime.now();
   double _expectedPrice = 0.0;
+  double _predictedPrice = 0.0;
 
   List<String> _selectedDistricts = [];
   List<String> _selectedMarkets =
@@ -337,11 +340,7 @@ class _CropPriceAdvisorScreenState extends State<CropPriceAdvisorScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          data: [
-                            'Grade A',
-                            'Grade B',
-                            'Grade C'
-                          ] // Example grades
+                          data: ['1', '2', '3'] // Example grades
                               .map((grade) => SelectedListItem(name: grade))
                               .toList(),
                           onSelected: (List<dynamic> selectedList) {
@@ -393,18 +392,47 @@ class _CropPriceAdvisorScreenState extends State<CropPriceAdvisorScreen> {
 
                 // Submit Button
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
-                      // **SIMULATED EXPECTED PRICE**
-                      // Replace with actual logic or API call
-                      _expectedPrice = _simulateExpectedPrice(
-                        _selectedState,
-                        _district,
-                        _selectedMarket,
-                        _selectedCropVariety,
-                        _selectedDate,
+                      // Format the data for submission
+                      var submissionData = [
+                        {
+                          "state_name": _selectedState,
+                          "district_name": _district,
+                          "market_name": _market,
+                          "commodity_name": _selectedCrop,
+                          "variety": _selectedCropVariety,
+                          "grade": _selectedGrade != null
+                              ? int.parse(_selectedGrade!)
+                              : null, // Assuming grades are stored as strings
+                          "year": DateFormat('yyyy').format(_selectedDate),
+                          "month": DateFormat('MM').format(_selectedDate),
+                          "day": DateFormat('dd').format(_selectedDate),
+                        }
+                      ];
+
+                      // Send the data to the specified URL
+                      var response = await http.post(
+                        Uri.parse(
+                            'https://4cfa-103-232-241-223.ngrok-free.app/api/price-predictor'),
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: jsonEncode(submissionData),
                       );
+
+                      if (response.statusCode == 200) {
+                        // Handle successful response
+                        var responseData = jsonDecode(response.body);
+                        _predictedPrice = responseData['predicted_prices']
+                            [0]; // Extract the predicted price
+                        print('Data submitted successfully: ${response.body}');
+                      } else {
+                        // Handle error response
+                        print('Failed to submit data: ${response.statusCode}');
+                      }
+
                       setState(() {}); // Update UI
                     }
                   },
@@ -415,17 +443,17 @@ class _CropPriceAdvisorScreenState extends State<CropPriceAdvisorScreen> {
                 ),
 
                 // Expected Price Output
-                if (_expectedPrice != 0.0)
+                if (_predictedPrice != 0.0)
                   Column(
                     children: [
                       SizedBox(height: 24),
                       Text(
-                        'Expected Price for $_selectedCropVariety on ${DateFormat('yyyy-MM-dd').format(_selectedDate)}:',
+                        'Predicted Price for $_selectedCropVariety on ${DateFormat('yyyy-MM-dd').format(_selectedDate)}:',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        '\$${_expectedPrice.toStringAsFixed(2)}',
+                        '\$${_predictedPrice.toStringAsFixed(2)}',
                         style: TextStyle(fontSize: 18, color: Colors.green),
                       ),
                     ],
@@ -436,12 +464,5 @@ class _CropPriceAdvisorScreenState extends State<CropPriceAdvisorScreen> {
         ),
       ),
     );
-  }
-
-  // Simulated method to calculate expected price
-  double _simulateExpectedPrice(String? state, String? district, String? market,
-      String? commodity, DateTime date) {
-    // Replace this logic with actual price calculation or API call
-    return 100.0; // Simulated price
   }
 }
