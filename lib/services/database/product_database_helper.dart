@@ -3,7 +3,6 @@ import 'package:e_commerce_app_flutter/farmer/models/User.dart';
 import 'package:e_commerce_app_flutter/models/Product.dart';
 import 'package:e_commerce_app_flutter/models/Review.dart';
 import 'package:e_commerce_app_flutter/services/authentification/authentification_service.dart';
-import 'package:enum_to_string/enum_to_string.dart';
 import 'package:geolocator/geolocator.dart';
 
 class ProductDatabaseHelper {
@@ -29,6 +28,7 @@ class ProductDatabaseHelper {
     Query<Map<String, dynamic>> queryRef;
     if (category == null) {
       queryRef = firestore.collection(PRODUCTS_COLLECTION_NAME);
+      print("query ref: $queryRef");
     } else {
       // final categStr = EnumToString.convertToString(productType);
       queryRef = firestore
@@ -45,7 +45,10 @@ class ProductDatabaseHelper {
     // }
     final queryRefDocs = await queryRef.get();
     for (final doc in queryRefDocs.docs) {
+      print("doc: ${doc.data()}");
+
       final product = Product.fromMap(doc.data(), id: doc.id);
+      print(product);
       if (product.name!.toLowerCase().contains(query) ||
           // product.description!.toLowerCase().contains(query) ||
           // product.highlights.toString().toLowerCase().contains(query) ||

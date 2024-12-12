@@ -11,6 +11,12 @@ class ApiRepo {
     return response;
   }
 
+  Future<dynamic> rainfallAi(var data) async {
+    print(data);
+    dynamic response = _apiService.postApi(data, AppUrl.rainfall_api);
+    return response;
+  }
+
   Future<dynamic> navigationAiGet() async {
     //   print(data);
     dynamic response = _apiService.getApi(AppUrl.navigationAI);
