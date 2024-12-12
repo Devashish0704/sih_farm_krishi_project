@@ -213,164 +213,164 @@ class ProductDatabaseHelper {
   //   }
   // }
 
-  Future<Map<String, dynamic>> fetchProductIdsAndPrice({
-    String? cropName,
-    String? category,
-  }) async {
-    // Static map for categories
-    const Map<String, List<String>> cropCategories = {
-      'fruits': ['banana', 'orange'],
-      'vegetables': ['cauliflower', 'onion', 'potato', 'tomato'],
-      'grains': ['rice', 'wheat'],
-    };
+  // Future<Map<String, dynamic>> fetchProductIdsAndPrice({
+  //   String? cropName,
+  //   String? category,
+  // }) async {
+  //   // Static map for categories
+  //   const Map<String, List<String>> cropCategories = {
+  //     'fruits': ['banana', 'orange'],
+  //     'vegetables': ['cauliflower', 'onion', 'potato', 'tomato'],
+  //     'grains': ['rice', 'wheat'],
+  //   };
 
-    try {
-      print("cATEGORY $category");
-      if (category != null && cropCategories.containsKey(category)) {
-        // Retrieve crops from the category
-        List<String> crops =
-            (cropCategories[category] as List<dynamic>).cast<String>();
+  //   try {
+  //     print("cATEGORY $category");
+  //     if (category != null && cropCategories.containsKey(category)) {
+  //       // Retrieve crops from the category
+  //       List<String> crops =
+  //           (cropCategories[category] as List<dynamic>).cast<String>();
 
-        print(crops);
+  //       print(crops);
 
-        Set<String> productIds = {};
+  //       Set<String> productIds = {};
 
-        for (var crop in crops) {
-          print(crop);
-          final cropResult = await _fetchCropDetails(crop);
-          productIds.addAll(cropResult['product_ids'] ?? []);
-        }
+  //       for (var crop in crops) {
+  //         print(crop);
+  //         final cropResult = await _fetchCropDetails(crop);
+  //         productIds.addAll(cropResult['product_ids'] ?? []);
+  //       }
 
-        return {
-          'product_ids': productIds.toList(),
-          'average_price': 0.0, // Placeholder: Compute average if required
-        };
-      } else if (cropName != null) {
-        // Use the existing logic for a specific crop name
-        return await _fetchCropDetails(cropName);
-      } else {
-        throw Exception("Either cropName or category must be provided");
-      }
-    } catch (e) {
-      print("Error fetching product IDs and price: $e");
-      return {
-        'product_ids': [],
-        'average_price': 0.0,
-      };
-    }
-  }
+  //       return {
+  //         'product_ids': productIds.toList(),
+  //         'average_price': 0.0, // Placeholder: Compute average if required
+  //       };
+  //     } else if (cropName != null) {
+  //       // Use the existing logic for a specific crop name
+  //       return await _fetchCropDetails(cropName);
+  //     } else {
+  //       throw Exception("Either cropName or category must be provided");
+  //     }
+  //   } catch (e) {
+  //     print("Error fetching product IDs and price: $e");
+  //     return {
+  //       'product_ids': [],
+  //       'average_price': 0.0,
+  //     };
+  //   }
+  // }
 
 // Helper function to fetch crop details based on cropName
-  Future<Map<String, dynamic>> _fetchCropDetails(String cropName) async {
-    try {
-      final cropDoc =
-          await firestore.collection('crops-demand').doc(cropName).get();
+  // Future<Map<String, dynamic>> _fetchCropDetails(String cropName) async {
+  //   try {
+  //     final cropDoc =
+  //         await firestore.collection('crops-demand').doc(cropName).get();
 
-      if (!cropDoc.exists) {
-        throw Exception("Crop document not found");
-      }
+  //     if (!cropDoc.exists) {
+  //       throw Exception("Crop document not found");
+  //     }
 
-      print("Crop document found.");
+  //     print("Crop document found.");
 
-      Map<String, dynamic> cropData = cropDoc.data() ?? {};
-      Map<String, dynamic> statesData = cropData['states'] ?? {};
+  //     Map<String, dynamic> cropData = cropDoc.data() ?? {};
+  //     Map<String, dynamic> statesData = cropData['states'] ?? {};
 
-      List<Map<String, dynamic>> statesList = [];
-      for (var entry in statesData.entries) {
-        final stateName = entry.key;
-        final stateData = entry.value;
+  //     List<Map<String, dynamic>> statesList = [];
+  //     for (var entry in statesData.entries) {
+  //       final stateName = entry.key;
+  //       final stateData = entry.value;
 
-        if (stateData is Map<String, dynamic>) {
-          statesList.add({
-            'state': stateName,
-            'production': (stateData['production'] as num?)?.toDouble() ?? 0.0,
-            'demand': (stateData['demand'] as num?)?.toDouble() ?? 0.0,
-            'price': (stateData['price'] as num?)?.toDouble() ?? 0.0,
-          });
-        } else {
-          print("Invalid data for state: $stateName");
-        }
-      }
+  //       if (stateData is Map<String, dynamic>) {
+  //         statesList.add({
+  //           'state': stateName,
+  //           'production': (stateData['production'] as num?)?.toDouble() ?? 0.0,
+  //           'demand': (stateData['demand'] as num?)?.toDouble() ?? 0.0,
+  //           'price': (stateData['price'] as num?)?.toDouble() ?? 0.0,
+  //         });
+  //       } else {
+  //         print("Invalid data for state: $stateName");
+  //       }
+  //     }
 
-      // Sort states by production-demand difference
-      statesList.sort((a, b) {
-        double demandDiffA = a['production'] - a['demand'];
-        double demandDiffB = b['production'] - b['demand'];
-        return demandDiffB.compareTo(demandDiffA);
-      });
+  //     // Sort states by production-demand difference
+  //     statesList.sort((a, b) {
+  //       double demandDiffA = a['production'] - a['demand'];
+  //       double demandDiffB = b['production'] - b['demand'];
+  //       return demandDiffB.compareTo(demandDiffA);
+  //     });
 
-      // Calculate average price
-      List<double> prices = statesList
-          .map((state) => (state['price'] as num?)?.toDouble() ?? 0.0)
-          .toList()
-        ..sort((a, b) => b.compareTo(a));
+  //     // Calculate average price
+  //     List<double> prices = statesList
+  //         .map((state) => (state['price'] as num?)?.toDouble() ?? 0.0)
+  //         .toList()
+  //       ..sort((a, b) => b.compareTo(a));
 
-      int count = prices.length < 10 ? prices.length : 10;
-      double averagePrice = count > 0
-          ? prices.sublist(0, count).reduce((a, b) => a + b) / count
-          : 0.0;
+  //     int count = prices.length < 10 ? prices.length : 10;
+  //     double averagePrice = count > 0
+  //         ? prices.sublist(0, count).reduce((a, b) => a + b) / count
+  //         : 0.0;
 
-      print("Average price calculated: $averagePrice");
+  //     print("Average price calculated: $averagePrice");
 
-      // Fetch product IDs and their corresponding prices
-      List<Map<String, dynamic>> productsWithPrice = [];
+  //     // Fetch product IDs and their corresponding prices
+  //     List<Map<String, dynamic>> productsWithPrice = [];
 
-      for (var state in statesList) {
-        final productQuery = await firestore
-            .collection('products')
-            .where('state', isEqualTo: state['state'])
-            .get();
+  //     for (var state in statesList) {
+  //       final productQuery = await firestore
+  //           .collection('products')
+  //           .where('state', isEqualTo: state['state'])
+  //           .get();
 
-        for (var product in productQuery.docs) {
-          final productData = product.data();
-          double productPrice =
-              (productData['price'] as num?)?.toDouble() ?? 0.0;
+  //       for (var product in productQuery.docs) {
+  //         final productData = product.data();
+  //         double productPrice =
+  //             (productData['price'] as num?)?.toDouble() ?? 0.0;
 
-          // Check crop name match in multiple fields
-          if ((productData['name'] as String?)
-                      ?.toLowerCase()
-                      .contains(cropName.toLowerCase()) ==
-                  true ||
-              (productData['description'] as String?)
-                      ?.toLowerCase()
-                      .contains(cropName.toLowerCase()) ==
-                  true ||
-              (productData['highlights']
-                      ?.toString()
-                      .toLowerCase()
-                      .contains(cropName.toLowerCase()) ??
-                  false) ||
-              (productData['variant']
-                      ?.toString()
-                      .toLowerCase()
-                      .contains(cropName.toLowerCase()) ??
-                  false) ||
-              (productData['seed_company'] as String?)
-                      ?.toLowerCase()
-                      .contains(cropName.toLowerCase()) ==
-                  true) {
-            productsWithPrice.add({
-              'product_id': product.id,
-              'product_price': productPrice,
-            });
-          }
-        }
-      }
+  //         // Check crop name match in multiple fields
+  //         if ((productData['name'] as String?)
+  //                     ?.toLowerCase()
+  //                     .contains(cropName.toLowerCase()) ==
+  //                 true ||
+  //             (productData['description'] as String?)
+  //                     ?.toLowerCase()
+  //                     .contains(cropName.toLowerCase()) ==
+  //                 true ||
+  //             (productData['highlights']
+  //                     ?.toString()
+  //                     .toLowerCase()
+  //                     .contains(cropName.toLowerCase()) ??
+  //                 false) ||
+  //             (productData['variant']
+  //                     ?.toString()
+  //                     .toLowerCase()
+  //                     .contains(cropName.toLowerCase()) ??
+  //                 false) ||
+  //             (productData['seed_company'] as String?)
+  //                     ?.toLowerCase()
+  //                     .contains(cropName.toLowerCase()) ==
+  //                 true) {
+  //           productsWithPrice.add({
+  //             'product_id': product.id,
+  //             'product_price': productPrice,
+  //           });
+  //         }
+  //       }
+  //     }
 
-      print("Products with price: $productsWithPrice");
+  //     print("Products with price: $productsWithPrice");
 
-      return {
-        'products': productsWithPrice,
-        'average_price': averagePrice,
-      };
-    } catch (e) {
-      print("Error fetching crop details: $e");
-      return {
-        'products': [],
-        'average_price': 0.0,
-      };
-    }
-  }
+  //     return {
+  //       'products': productsWithPrice,
+  //       'average_price': averagePrice,
+  //     };
+  //   } catch (e) {
+  //     print("Error fetching crop details: $e");
+  //     return {
+  //       'products': [],
+  //       'average_price': 0.0,
+  //     };
+  //   }
+  // }
 
   Future<List<String>> searchInProductsByCategory(String category) async {
     // Create a reference to the products collection
