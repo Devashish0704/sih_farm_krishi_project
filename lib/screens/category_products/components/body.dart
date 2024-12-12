@@ -492,16 +492,26 @@ class _BodyState extends State<Body> {
 
                 updateFixedPrice(query.toLowerCase(), total);
 
+                // updatePricesForCropInProducts(
+                //     sortedData, query.toLowerCase(), total);
+
                 Map<String, Map<String, String>> productDetails =
-                    await getProductKeysForStatesAndUpdatePrices(
-                        sortedData, query.toLowerCase(), total);
+                    await getProductKeysForStates(
+                        sortedData, query.toLowerCase());
 
-                searchedProductsIdandPrice = await ProductDatabaseHelper()
-                    .fetchProductIdsAndPrice(cropName: query.toLowerCase());
+                for (var state in productDetails.keys) {
+                  String? productId = productDetails[state]?['productId'];
+                  print(productId);
+                  if (productId != null) {
+                    // Update the price for this product
+                    await updateFixedPricetoProducts(productId, total);
+                    print(
+                        'Updated price for product ID $productId in state $state.');
+                  }
+                }
 
-                if (searchedProductsIdandPrice != null) {
-                  double productPrice =
-                      searchedProductsIdandPrice["average_price"];
+                if (total != null) {
+                  double productPrice = total;
                   int intProductPrice = productPrice.toInt();
 
                   await Navigator.push(
@@ -509,8 +519,10 @@ class _BodyState extends State<Body> {
                     MaterialPageRoute(
                       builder: (context) => SearchResultScreen(
                         searchQuery: query,
-                        searchResultProductsId:
-                            searchedProductsIdandPrice["product_ids"],
+                        searchResultProductsId: productDetails.values
+                            .map((e) => e['productId'])
+                            .toList()
+                            .cast<String>(),
                         searchIn: "All Products",
                         productPrice: intProductPrice.toString(),
                       ),

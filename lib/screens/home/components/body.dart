@@ -8,6 +8,7 @@ import 'package:e_commerce_app_flutter/farmer/services/LocalizationProvider.dart
 import 'package:e_commerce_app_flutter/models/Product.dart';
 import 'package:e_commerce_app_flutter/screens/cart/cart_screen.dart';
 import 'package:e_commerce_app_flutter/screens/category_products/category_products_screen.dart';
+import 'package:e_commerce_app_flutter/screens/home/components/crop_calander.dart';
 import 'package:e_commerce_app_flutter/screens/product_details/product_details_screen.dart';
 import 'package:e_commerce_app_flutter/screens/search_result/search_result_screen.dart';
 import 'package:e_commerce_app_flutter/services/authentification/authentification_service.dart';
@@ -15,6 +16,7 @@ import 'package:e_commerce_app_flutter/services/data_streams/all_products_stream
 import 'package:e_commerce_app_flutter/services/data_streams/data_stream.dart';
 import 'package:e_commerce_app_flutter/services/data_streams/favourite_products_stream.dart';
 import 'package:e_commerce_app_flutter/services/database/product_database_helper.dart';
+import 'package:e_commerce_app_flutter/services/dp-ratio/sort_for_price.dart';
 import 'package:e_commerce_app_flutter/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -78,23 +80,37 @@ class _BodyState extends State<Body> {
 
                     try {
                       // Call fetchProductIdsAndPrice with cropName
-                      final Map<String, dynamic> searchedProductsIdandPrice =
-                          await ProductDatabaseHelper().fetchProductIdsAndPrice(
-                              cropName: query.toLowerCase());
+                      // final Map<String, dynamic> searchedProductsIdandPrice =
+                      // await ProductDatabaseHelper().fetchProductIdsAndPrice(
+                      //     cropName: query.toLowerCase());
 
-                      if (searchedProductsIdandPrice != null) {
-                        print(searchedProductsIdandPrice);
+                      List<Map<String, dynamic>> sortedData =
+                          await fetchAndSortCropData(query.toLowerCase());
 
-                        // Extract product IDs from the result
-                        List<dynamic> products =
-                            searchedProductsIdandPrice['products'];
-                        List<String> productIds = products
-                            .map((product) => product['product_id'] as String)
-                            .toList();
+                      double total = calculateTop10AveragePrice(sortedData);
 
-                        // Optionally, you can also extract the average price if needed
-                        double productPrice =
-                            searchedProductsIdandPrice["average_price"];
+                      updateFixedPrice(query.toLowerCase(), total);
+
+                      // updatePricesForCropInProducts(
+                      //     sortedData, query.toLowerCase(), total);
+
+                      Map<String, Map<String, String>> productDetails =
+                          await getProductKeysForStates(
+                              sortedData, query.toLowerCase());
+
+                      for (var state in productDetails.keys) {
+                        String? productId = productDetails[state]?['productId'];
+                        print(productId);
+                        if (productId != null) {
+                          // Update the price for this product
+                          await updateFixedPricetoProducts(productId, total);
+                          print(
+                              'Updated price for product ID $productId in state $state.');
+                        }
+                      }
+
+                      if (total != null) {
+                        double productPrice = total;
                         int intProductPrice = productPrice.toInt();
 
                         await Navigator.push(
@@ -102,11 +118,12 @@ class _BodyState extends State<Body> {
                           MaterialPageRoute(
                             builder: (context) => SearchResultScreen(
                               searchQuery: query,
-                              searchResultProductsId:
-                                  productIds, // Only product IDs
+                              searchResultProductsId: productDetails.values
+                                  .map((e) => e['productId'])
+                                  .toList()
+                                  .cast<String>(),
                               searchIn: "All Products",
-                              productPrice:
-                                  intProductPrice.toString(), // Average price
+                              productPrice: intProductPrice.toString(),
                             ),
                           ),
                         );
@@ -184,12 +201,16 @@ class _BodyState extends State<Body> {
                         //     .navigateTo(context, '/chatbot/$language'),
                         ),
                     _buildQuickActionButton(
-                        icon: Icons.calendar_today,
-                        label: isEnglish ? 'Crop Calendar' : 'फसल कैलेंडर',
-                        onTap: () {}
-                        // onTap: () =>
-                        //     Application.router.navigateTo(context, '/my-fields'),
-                        ),
+                      icon: Icons.calendar_today,
+                      label: isEnglish ? 'Crop Calendar' : 'फसल कैलेंडर',
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CropCalendarScreen(),
+                          )),
+
+                      // Application.router.navigateTo(context, '/my-fields'),
+                    ),
                     _buildQuickActionButton(
                         icon: Icons.shopping_cart,
                         label: isEnglish ? 'Orders' : 'आर्डर',

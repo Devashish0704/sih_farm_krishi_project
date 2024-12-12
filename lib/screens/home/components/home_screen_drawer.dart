@@ -11,6 +11,7 @@ import 'package:e_commerce_app_flutter/screens/change_email/change_email_screen.
 import 'package:e_commerce_app_flutter/screens/change_password/change_password_screen.dart';
 import 'package:e_commerce_app_flutter/screens/change_phone/change_phone_screen.dart';
 import 'package:e_commerce_app_flutter/screens/edit_product/edit_product_screen.dart';
+import 'package:e_commerce_app_flutter/screens/home/components/crop_calander.dart';
 import 'package:e_commerce_app_flutter/screens/manage_addresses/manage_addresses_screen.dart';
 import 'package:e_commerce_app_flutter/screens/my_orders/my_orders_screen.dart';
 import 'package:e_commerce_app_flutter/screens/my_products/my_products_screen.dart';
@@ -150,6 +151,18 @@ class HomeScreenDrawer extends StatelessWidget {
                   await showConfirmationDialog(context, "Confirm Sign out ?");
               if (confirmation) AuthentificationService().signOut();
             },
+          ),
+          ListTile(
+            leading: Icon(Icons.calendar_month),
+            title: Text(
+              "Crop Calander",
+              style: TextStyle(fontSize: 16, color: Colors.black),
+            ),
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CropCalendarScreen(),
+                )),
           ),
         ],
       ),
@@ -388,9 +401,9 @@ class HomeScreenDrawer extends StatelessWidget {
 
             // Map<String, Map<String, String>> productDetails =
             //     await getProductKeysForStates(sortedData, "Roma Tomato");
-            Map<String, Map<String, String>> productDetails =
-                await getProductIdsAndPricesForCategory("vegetables");
-            print(productDetails);
+            // Map<String, Map<String, String>> productDetails =
+            //     await getProductIdsAndPricesForCategory("vegetables");
+            // print(productDetails);
           },
         ),
       ],
