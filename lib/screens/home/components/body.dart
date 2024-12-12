@@ -6,6 +6,7 @@ import 'package:e_commerce_app_flutter/farmer/screens/BidScreen.dart';
 import 'package:e_commerce_app_flutter/farmer/services/LocalizationProvider.dart';
 import 'package:e_commerce_app_flutter/screens/cart/cart_screen.dart';
 import 'package:e_commerce_app_flutter/screens/category_products/category_products_screen.dart';
+import 'package:e_commerce_app_flutter/screens/home/components/crop_calander.dart';
 import 'package:e_commerce_app_flutter/screens/product_details/product_details_screen.dart';
 import 'package:e_commerce_app_flutter/screens/search_result/search_result_screen.dart';
 import 'package:e_commerce_app_flutter/screens/webSceens/chatBot.dart';
@@ -14,6 +15,7 @@ import 'package:e_commerce_app_flutter/services/authentification/authentificatio
 import 'package:e_commerce_app_flutter/services/data_streams/all_products_stream.dart';
 import 'package:e_commerce_app_flutter/services/data_streams/favourite_products_stream.dart';
 import 'package:e_commerce_app_flutter/services/database/product_database_helper.dart';
+import 'package:e_commerce_app_flutter/services/dp-ratio/sort_for_price.dart';
 import 'package:e_commerce_app_flutter/size_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
