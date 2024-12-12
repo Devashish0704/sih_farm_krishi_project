@@ -12,12 +12,15 @@ import 'package:e_commerce_app_flutter/screens/product_details/product_details_s
 import 'package:e_commerce_app_flutter/services/data_streams/cart_items_stream.dart';
 import 'package:e_commerce_app_flutter/services/database/product_database_helper.dart';
 import 'package:e_commerce_app_flutter/services/database/user_database_helper.dart';
+import 'package:e_commerce_app_flutter/services/message.dart';
 import 'package:e_commerce_app_flutter/size_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:logger/logger.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../utils.dart';
 
@@ -445,6 +448,47 @@ class _BodyState extends State<Body> {
           }
         }
       });
+
+      final number = Uri.encodeComponent('918949362882');
+      final number2 = Uri.encodeComponent('919667027786');
+      final message =
+          Uri.encodeComponent('Congratulation for buying the product');
+      final message2 = Uri.encodeComponent('Your product get sold');
+
+      // Construct the full URL with properly encoded parameters
+      final urla = Uri.parse(
+          'https://localhost:4000/send?number=918949362882&message=Booked');
+      final urlb = Uri.parse(
+          'https://localhost:4000/send?number=$number2&message=$message');
+
+      // try {
+      // Add error handling and timeout
+      final response = await http.get(urla).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          // Handle timeout scenario
+          throw Exception('Request timed out');
+        },
+      );
+      final responsew = await http.get(urlb).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          // Handle timeout scenario
+          throw Exception('Request timed out');
+        },
+      );
+      // bool successee = await MessageService().sendTextMessage(
+      //   phoneNumber: "918949362882",
+      //   message: "Your order has been placed successfully",
+      // );
+
+      // print(successee);
+
+      final Uri url = Uri.parse('https://legal-form.onrender.com/');
+
+      if (!await launchUrl(url)) {
+        throw Exception('Could not launch $url');
+      }
     } catch (e) {
       print('Error processing successful payment: $e');
     }
